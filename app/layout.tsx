@@ -27,12 +27,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-           <nav>
-          {/* Prefetched when the link is hovered or enters the viewport */}
-          <Link href="/pg">Pages</Link>
-          <Link href="/pg">Pages</Link>
-          {/* No prefetching */}
-        </nav>
+         {/* Header */}
+        <div className="flex justify-center items-center bg-white">
+          <header className="flex items-center justify-between px-6 py-4 bg-gray-100 border-b border-orange-200 shadow-sm">
+
+         
+            <nav className="flex items-center gap-6">
+              <button className="text-gray-600 hover:text-orange-500 transition-colors font-medium">
+              <Link href="/editor">Editor</Link>  
+              </button>
+              <button className="text-gray-600 hover:text-orange-500 transition-colors font-medium">Settings</button>
+              <button className="text-gray-600 hover:text-orange-500 transition-colors font-medium">Help</button>
+            </nav>
+          </header>
+        </div>
         {children}
       </body>
     </html>
