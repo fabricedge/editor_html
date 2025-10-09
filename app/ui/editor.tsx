@@ -1,7 +1,8 @@
-
 "use client";
 import { useState, useEffect } from 'react';
 import { Code2, Eye, Play } from 'lucide-react';
+
+
 
 export default function Editor() {
   const [code, setCode] = useState('<h1>Hello, world!</h1>');
