@@ -2,7 +2,7 @@
 "use server";
 import LikeButton from '../../../ui/like-button'
 import { getPost } from '../../../lib/pages/data'
-
+import Editor from '../../../ui/editor'
 export default async function Page({
   params,
 }: {
@@ -13,12 +13,8 @@ export default async function Page({
   post.likes = post.likes ?? 0
   post.title = post.title ?? 'Untitled'
   return (
-    <div>
-      <main>
-        <h1>{post.title}</h1>
-        {/* ... */}
-        <LikeButton likes={post.likes} />
-      </main>
+    <div className="pt-5">
+      <Editor />
     </div>
   )
 }

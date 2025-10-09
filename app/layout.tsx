@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from 'next/link'
+import Header from '../app/ui/header'
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,20 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-         {/* Header */}
-        <div className="flex justify-center items-center bg-gray-100">
-          <header className="flex items-center justify-between px-6 py-4 bg-gray-100">
-
-         
-            <nav className="flex items-center gap-6">
-              <button className="text-gray-600 hover:text-orange-500 transition-colors font-medium">
-              <Link href="/pg/edit">Editor</Link>  
-              </button>
-              <button className="text-gray-600 hover:text-orange-500 transition-colors font-medium">Settings</button>
-              <button className="text-gray-600 hover:text-orange-500 transition-colors font-medium">Help</button>
-            </nav>
-          </header>
-        </div>
+         <Header user={{ name: "Knee" }} />
         {children}
       </body>
     </html>
