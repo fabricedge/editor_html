@@ -1,5 +1,7 @@
 
 
+import Link from 'next/link';
+
 const HomePage = () => {
   
 
@@ -88,12 +90,12 @@ const HomePage = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
+              <Link
                 href="/pg/create"
                 className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-pink-500/50"
               >
                 Get Started
-              </a>
+              </Link>
               
             </div>
           </div>
