@@ -1,7 +1,7 @@
 
 
 const HomePage = () => {
-
+  
 
   return (
     <div className="bg-gradient-to-br from-gray-50 via-white to-pink-50 text-gray-900 min-h-screen overflow-hidden relative">

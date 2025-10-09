@@ -1,5 +1,5 @@
 // /lib/data.ts
-import { UUID } from 'crypto';
+
 import { createClient } from '../../../utils/supabase/server';
 
 type Page = {
@@ -21,7 +21,7 @@ const pages: Page[] = [
 export async function getPage(nanoid: string) {
   const supabase = await createClient();
   const { data: page, error } = await supabase.from("pages").select("*").eq("nanoid", nanoid).single();
-  
+ 
   if(error) {
     throw new Error('Page not found')
   } else {
@@ -38,7 +38,7 @@ export async function getPage(nanoid: string) {
 //   return post
 // }
 
-// export async function getPosts(): Promise<Page[]> {
-//   await new Promise((resolve) => setTimeout(resolve, 200)) // simulate delay
-//   return pages
-// }
+export async function getPosts(): Promise<Page[]> {
+  await new Promise((resolve) => setTimeout(resolve, 200)) // simulate delay
+  return pages
+}
