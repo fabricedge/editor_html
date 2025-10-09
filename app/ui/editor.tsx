@@ -2,9 +2,12 @@
 import { useState, useEffect } from 'react';
 import { Code2, Eye, Play } from 'lucide-react';
 
+interface EditorProps {
+  page: any; // or better: define a proper Page type
+}
 
 
-export default function Editor() {
+export default function Editor({ page }: EditorProps) {
   const [code, setCode] = useState('<h1>Hello, world!</h1>');
   const [iframeContent, setIframeContent] = useState('');
 
@@ -29,7 +32,7 @@ export default function Editor() {
         </div>
         <div className="flex-1 p-6 bg-[#FAF9F6]">
           <textarea
-            value={code}
+            value={page.html_data.components.raw_html.value}
             onChange={(e) => setCode(e.target.value)}
             className="w-full h-full bg-orange-50 text-gray-800 font-mono text-sm p-4 rounded-lg border border-orange-200 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-300 resize-none shadow-sm placeholder-gray-400"
             placeholder="Enter your HTML code here..."
