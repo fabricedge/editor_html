@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Code2, Eye, Play } from 'lucide-react';
 
 interface EditorProps {
-  page: any; // or better: define a proper Page type
+  page: string; // or better: define a proper Page type
 }
 
 
