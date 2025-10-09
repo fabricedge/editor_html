@@ -1,10 +1,9 @@
 
 "use server";
-import LikeButton from '../../ui/like-button'
-import { getPage } from '../../lib/pages/user/data'
-import Editor from '../../ui/editor'
+import LikeButton from '../ui/like-button'
+import { getPage } from '../lib/pages/user/data'
+import Editor from '../ui/editor'
 import { redirect } from "next/navigation";
-
 
 //todo: Have a visualizer for the html
 export default async function Page({
@@ -18,8 +17,8 @@ export default async function Page({
     
     return (
       <div className="pt-5">
-        <div className="text-black">{page.theme}</div>
-        
+        <div className="text-black align-items-center"></div>
+          <div  dangerouslySetInnerHTML={{ __html: page.html_data.components.raw_html.value }} />
       </div>
     );
   } catch (err) {

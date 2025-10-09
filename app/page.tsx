@@ -6,6 +6,12 @@ const HomePage = () => {
   return (
     <div className="bg-gradient-to-br from-gray-50 via-white to-pink-50 text-gray-900 min-h-screen overflow-hidden relative">
       <style>{`
+        @layer base {
+          html, body {
+            overflow: hidden;
+          }
+        }
+
         @keyframes fade-in-up {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }

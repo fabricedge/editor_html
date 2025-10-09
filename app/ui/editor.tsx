@@ -32,7 +32,7 @@ export default function Editor({ page }: EditorProps) {
         </div>
         <div className="flex-1 p-6 bg-[#FAF9F6]">
           <textarea
-            value={page.html_data.components.raw_html.value}
+            value={page}
             onChange={(e) => setCode(e.target.value)}
             className="w-full h-full bg-orange-50 text-gray-800 font-mono text-sm p-4 rounded-lg border border-orange-200 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-300 resize-none shadow-sm placeholder-gray-400"
             placeholder="Enter your HTML code here..."

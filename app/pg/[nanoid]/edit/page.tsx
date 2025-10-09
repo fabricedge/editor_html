@@ -18,8 +18,8 @@ export default async function Page({
     
     return (
       <div className="pt-5">
-        <div className="text-black">{page.theme}</div>
-        <Editor page={page}/>
+        <div className="text-black">test</div>
+        <Editor page={page.html_data.components.raw_html.value}/>
       </div>
     );
   } catch (err) {

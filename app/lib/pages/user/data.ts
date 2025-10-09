@@ -21,8 +21,8 @@ const pages: Page[] = [
 export async function getPage(nanoid: string) {
   const supabase = await createClient();
   const { data: page, error } = await supabase.from("pages").select("*").eq("nanoid", nanoid).single();
-  
-  console.log(page)
+  //
+  //console.log(page)
   if(error) {
     throw new Error('Page not found')
   } else {
