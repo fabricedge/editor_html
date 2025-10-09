@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { getPosts } from '../lib/pages/data'
+import { getPosts } from '../lib/pages/user/data'
 export default async function Pg({
   params,
 }: {
