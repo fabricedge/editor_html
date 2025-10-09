@@ -88,9 +88,7 @@ const HomePage = () => {
               >
                 Get Started
               </a>
-              <button className="glass-effect text-gray-900 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:bg-white/90">
-                View Examples
-              </button>
+              
             </div>
           </div>
         </div>
