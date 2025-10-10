@@ -24,7 +24,7 @@ export default async function Page({
         <div className="pt-5 text-black">
           
           <div className="text-black">test</div>
-          <Editor page={page.html_data.components.raw_html.value}/>
+          <Editor page_value={page.html_data.components.raw_html.value}/>
 
         </div>
       </div>

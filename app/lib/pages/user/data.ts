@@ -2,6 +2,8 @@
 
 import { createClient } from '../../../utils/supabase/server';
 
+import sql from '../../../db/db.js'
+
 type Page = {
   nanoid: string
   title: string
@@ -32,14 +34,24 @@ export async function getPage(nanoid: string) {
 }
 export async function editPage(nanoid: string, data: string) {
   const supabase = await createClient();
-  const { data: page, error } = await supabase.from("pages").insert("*").eq("nanoid", nanoid).single();
-  //
+  const { data: updatedPage, error: updateError } = await supabase
+    .from("pages")
+    .update({ html_data: {components: {raw_html: {value: data}}} })
+    .eq("nanoid", nanoid)
+    .single();
+
   //console.log(page)
-  if(error) {
+  if(updateError) {
     throw new Error('Page not found')
   } else {
-    return page
+    return updatedPage
   }
+  
+}
+
+export async function editPageSQL(nanoid: string, data: string) {
+  // function editpagewith sql  
+
   
 }
 
