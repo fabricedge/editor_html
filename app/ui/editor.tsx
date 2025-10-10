@@ -25,38 +25,30 @@ export default function Editor({
   const saveTimer = useRef<NodeJS.Timeout | null>(null);
 
   const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
-  const [showPreview, setShowPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Hydration-safe mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // Mount check for hydration-safe
+  useEffect(() => setMounted(true), []);
 
-  // ✅ Load cached or server version (client only)
+  // Load cached/server version (client-only)
   useEffect(() => {
     if (!mounted) return;
-
     const cached = loadFromCache(page_id);
 
     if (isCacheNewer(cached, server_updated_at)) {
       codeRef.current = cached!.content;
-      console.log("🧠 Using cached version (saved in DB)");
     } else {
       codeRef.current = page_value;
       saveToCache(page_id, page_value, true);
-      console.log("☁️ Using server version");
     }
-
     setLoading(false);
   }, [mounted, page_value, page_id, server_updated_at]);
 
-  // ✅ Handle typing
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     codeRef.current = e.target.value;
     hasEdited.current = true;
-
     saveToCache(page_id, e.target.value, false);
     setStatus("saving");
 
@@ -64,10 +56,8 @@ export default function Editor({
     saveTimer.current = setTimeout(() => saveToServer(), 2000);
   };
 
-  // ✅ Save to server
   const saveToServer = async () => {
     if (!hasEdited.current) return;
-
     setStatus("saving");
     try {
       const res = await fetch("/api/", {
@@ -95,7 +85,6 @@ export default function Editor({
     }
   };
 
-  // ✅ Toggle preview
   const togglePreview = () => {
     setShowPreview((prev) => {
       const newState = !prev;
@@ -106,30 +95,30 @@ export default function Editor({
     });
   };
 
-  if (!mounted) return null; // Prevent SSR mismatch
+  if (!mounted) return null;
 
   return (
-    <div className="relative flex h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
+    <div className="relative flex flex-col md:flex-row h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
       {/* Loading overlay */}
       {loading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 z-50">
           <div className="w-12 h-12 border-4 border-orange-300 border-t-orange-500 rounded-full animate-spin mb-4" />
           <p className="text-gray-600 text-sm text-center max-w-xs">
-            Loading editor... This may depend on text size or connection speed.
+            Loading editor... Delay depends on text size or connection speed.
           </p>
         </div>
       )}
 
       {/* Editor Panel */}
-      <div className="flex-1 flex flex-col border-r border-orange-200">
-        <div className="flex items-center gap-2 px-6 py-4 bg-[#FAF9F6] border-b border-orange-200">
+      <div className="flex-1 flex flex-col border-b md:border-b-0 md:border-r border-orange-200">
+        <div className="flex items-center gap-2 px-4 md:px-6 py-3 bg-[#FAF9F6] border-b border-orange-200">
           <Code2 className="w-5 h-5 text-orange-400" />
           <h2 className="text-lg font-semibold text-gray-800">Code Editor</h2>
 
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2 md:gap-3">
             <button
               onClick={togglePreview}
-              className="px-4 py-1 bg-orange-400 text-white rounded hover:bg-orange-500"
+              className="px-3 py-1 bg-orange-400 text-white rounded hover:bg-orange-500 text-sm"
             >
               {showPreview ? "Hide Preview" : "Show Preview"}
             </button>
@@ -141,7 +130,7 @@ export default function Editor({
           </div>
         </div>
 
-        <div className="flex-1 p-6 bg-[#FAF9F6]">
+        <div className="flex-1 p-4 md:p-6 bg-[#FAF9F6]">
           <textarea
             defaultValue={codeRef.current}
             onChange={handleChange}
@@ -154,12 +143,12 @@ export default function Editor({
       {/* Live Preview */}
       {showPreview && (
         <div className="flex-1 flex flex-col bg-orange-50">
-          <div className="flex items-center gap-2 px-6 py-4 bg-[#FAF9F6] border-b border-orange-200">
+          <div className="flex items-center gap-2 px-4 md:px-6 py-3 bg-[#FAF9F6] border-b border-orange-200">
             <Eye className="w-5 h-5 text-orange-500" />
             <h2 className="text-lg font-semibold text-gray-800">Live Preview</h2>
             <Play className="w-4 h-4 text-orange-400 ml-auto" />
           </div>
-          <div className="flex-1 p-6 bg-gradient-to-br from-white to-orange-50">
+          <div className="flex-1 p-4 md:p-6 bg-gradient-to-br from-white to-orange-50">
             <iframe
               ref={iframeRef}
               className="w-full h-full bg-[#FAF9F6] rounded-lg shadow-lg border border-orange-200"
