@@ -27,19 +27,25 @@ export default function Header({ user }: { user?: { name: string } }) {
           overflow: hidden;
           opacity: 0;
           transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+          padding: 0;
+          color: #ec4899;
         }
 
         #mobile-menu.show {
           max-height: 300px;
           opacity: 1;
+          padding: 0;
         }
 
         .hamburger {
           transition: transform 0.3s ease;
+          color: #ec4899;
+          margin-right: 1rem;
         }
 
         .hamburger.active {
           transform: rotate(90deg);
+          margin-right: 1rem;
         }
 
         .hamburger .line1,
@@ -60,13 +66,13 @@ export default function Header({ user }: { user?: { name: string } }) {
         .hamburger.active .line3 {
           transform: rotate(-45deg) translate(7px, -6px);
         }
-
         /* ✅ Sticky instead of fixed */
         .stuck-nav-container {
           position: sticky;
           top: 0;
           z-index: 40;
           width: 100%;
+          padding: 0;
         }
 
         .stuck-nav {
@@ -81,7 +87,7 @@ export default function Header({ user }: { user?: { name: string } }) {
 
         @media (max-width: 768px) {
           .stuck-nav {
-            padding: 0.75rem 1rem;
+            padding: 0;
           }
         }
       `}</style>
@@ -167,13 +173,13 @@ export default function Header({ user }: { user?: { name: string } }) {
                 }`}
               >
                 <Link
-                  href="/pg"
+                  href="/p"
                   className="block hover-text-maroon-400 transition-colors duration-300 py-2"
                 >
                   Ver Páginas
                 </Link>
                 <Link
-                  href="/pg/create"
+                  href="/p/create"
                   className="block hover-text-maroon-400 transition-colors duration-300 py-2"
                 >
                   Criar Página
