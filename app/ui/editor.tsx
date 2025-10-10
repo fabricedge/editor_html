@@ -2,17 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Code2, Eye, Play } from "lucide-react";
-import {
-  loadFromCache,
-  saveToCache,
-  isCacheNewer,
-} from "../utils/cache/cacheManager";
+import { loadFromCache, saveToCache, isCacheNewer } from "../utils/cache/cacheManager";
 
 interface EditorProps {
   page_value: string;
   page_id?: string;
   server_updated_at?: string;
 }
+
+const MAX_CHARACTERS = 10000;
 
 export default function Editor({
   page_value,
@@ -25,31 +23,37 @@ export default function Editor({
   const saveTimer = useRef<NodeJS.Timeout | null>(null);
 
   const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
-  const [showPreview, setShowPreview] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [charCount, setCharCount] = useState(0);
 
-  // Mount check for hydration-safe
   useEffect(() => setMounted(true), []);
 
-  // Load cached/server version (client-only)
   useEffect(() => {
     if (!mounted) return;
+
     const cached = loadFromCache(page_id);
 
     if (isCacheNewer(cached, server_updated_at)) {
-      codeRef.current = cached!.content;
+      codeRef.current = cached!.content.slice(0, MAX_CHARACTERS);
     } else {
-      codeRef.current = page_value;
-      saveToCache(page_id, page_value, true);
+      codeRef.current = page_value.slice(0, MAX_CHARACTERS);
+      saveToCache(page_id, codeRef.current, true);
     }
+
+    setCharCount(codeRef.current.length);
     setLoading(false);
   }, [mounted, page_value, page_id, server_updated_at]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    codeRef.current = e.target.value;
+    // Limita o valor ao máximo permitido
+    const value = e.target.value.slice(0, MAX_CHARACTERS);
+    codeRef.current = value;
+    setCharCount(value.length);
+
     hasEdited.current = true;
-    saveToCache(page_id, e.target.value, false);
+    saveToCache(page_id, value, false);
     setStatus("saving");
 
     if (saveTimer.current) clearTimeout(saveTimer.current);
@@ -58,6 +62,7 @@ export default function Editor({
 
   const saveToServer = async () => {
     if (!hasEdited.current) return;
+
     setStatus("saving");
     try {
       const res = await fetch("/api/", {
@@ -115,6 +120,13 @@ export default function Editor({
           <Code2 className="w-5 h-5 text-orange-400" />
           <h2 className="text-lg font-semibold text-gray-800">Code Editor</h2>
 
+            {/* Character count */}
+          <div className="text-right text-sm">
+            <span className={charCount >= MAX_CHARACTERS ? "text-red-600 font-semibold" : "text-gray-500"}>
+              {charCount} / {MAX_CHARACTERS} characters
+            </span>
+          </div>
+
           <div className="ml-auto flex items-center gap-2 md:gap-3">
             <button
               onClick={togglePreview}
@@ -130,13 +142,16 @@ export default function Editor({
           </div>
         </div>
 
-        <div className="flex-1 p-4 md:p-6 bg-[#FAF9F6]">
+        <div className="flex-1 p-4 md:p-6 bg-[#FAF9F6] flex flex-col">
           <textarea
             defaultValue={codeRef.current}
             onChange={handleChange}
-            className="w-full h-full bg-orange-50 text-gray-800 font-mono text-sm rounded-lg border border-orange-200 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-300 resize-none shadow-sm placeholder-gray-400"
+            maxLength={MAX_CHARACTERS} // Garante limite exato
+            className="w-full flex-1 bg-orange-50 text-gray-800 font-mono text-sm rounded-lg border border-orange-200 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-300 resize-none shadow-sm placeholder-gray-400"
             spellCheck={false}
           />
+
+        
         </div>
       </div>
 
