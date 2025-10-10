@@ -2,7 +2,7 @@
 
 import { createClient } from '../../../utils/supabase/server';
 
-import sql from '../../../db/db.js'
+
 
 type Page = {
   nanoid: string

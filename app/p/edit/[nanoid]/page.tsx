@@ -2,7 +2,7 @@
 "use server";
 import LikeButton from '../../../ui/like-button'
 import { getPage } from '../../../lib/pages/user/data'
-import Editor from '../../../ui/editor'
+import EditorClient from '../../../ui/editor'
 import { redirect } from "next/navigation";
 
 import Header from '../../../ui/header'
@@ -23,7 +23,7 @@ export default async function Page({
         <Header user={{ name: "Knee" }} />
         <div className="pt-5 text-black">
           
-          <Editor page_value={page.html_data.components.raw_html.value} server_updated_at= {page.updated_at} />
+          <EditorClient page_value={page.html_data.components.raw_html.value} page_id={page.id} server_updated_at={page.updated_at} />
 
         </div>
       </div>

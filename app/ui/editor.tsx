@@ -2,11 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Code2, Eye, Play } from "lucide-react";
+import {
+  loadFromCache,
+  saveToCache,
+  isCacheNewer,
+} from "../utils/cache/cacheManager";
 
 interface EditorProps {
-  page_value: string;           // initial server code
-  page_id?: string;             // unique ID (for cache key)
-  server_updated_at?: string;   // from Supabase: ISO timestamp of last update
+  page_value: string;
+  page_id?: string;
+  server_updated_at?: string;
 }
 
 export default function Editor({
@@ -14,91 +19,78 @@ export default function Editor({
   page_id = "default",
   server_updated_at,
 }: EditorProps) {
-  const CACHE_KEY = `editor_code_cache_${page_id}`;
-
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const codeRef = useRef<string>("");
-  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "conflict">("idle");
-  const [showPreview, setShowPreview] = useState(false);
-  const [loading, setLoading] = useState(true);
   const hasEdited = useRef(false);
   const saveTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const now = () => Date.now();
+  const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const [showPreview, setShowPreview] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Load + freshness check
+  // ✅ Hydration-safe mount
   useEffect(() => {
-    const cachedData = localStorage.getItem(CACHE_KEY);
-    const parsed = cachedData ? JSON.parse(cachedData) : null;
+    setMounted(true);
+  }, []);
 
-    const serverTime = server_updated_at ? new Date(server_updated_at).getTime() : 0;
-    const cacheTime = parsed?.updated_at ?? 0;
+  // ✅ Load cached or server version (client only)
+  useEffect(() => {
+    if (!mounted) return;
 
-    if (parsed && cacheTime > serverTime) {
-      // 🧠 Cache is fresher — keep it
-      codeRef.current = parsed.content;
-      console.log("Using cached code (newer than server)");
+    const cached = loadFromCache(page_id);
+
+    if (isCacheNewer(cached, server_updated_at)) {
+      codeRef.current = cached!.content;
+      console.log("🧠 Using cached version (saved in DB)");
     } else {
-      // 🔁 Server is fresher — replace cache
       codeRef.current = page_value;
-      localStorage.setItem(
-        CACHE_KEY,
-        JSON.stringify({ content: page_value, updated_at: now() })
-      );
-      console.log("Using server code (cache updated)");
+      saveToCache(page_id, page_value, true);
+      console.log("☁️ Using server version");
     }
 
     setLoading(false);
-  }, [CACHE_KEY, page_value, server_updated_at]);
+  }, [mounted, page_value, page_id, server_updated_at]);
 
-  // ✅ Handle code edits
+  // ✅ Handle typing
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     codeRef.current = e.target.value;
     hasEdited.current = true;
 
-    localStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({ content: e.target.value, updated_at: now() })
-    );
-
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => saveToServer(), 200);
-  };
-
-  // ✅ Save to server with conflict awareness
-  const saveToServer = async () => {
-    if (!hasEdited.current) return;
+    saveToCache(page_id, e.target.value, false);
     setStatus("saving");
 
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => saveToServer(), 2000);
+  };
+
+  // ✅ Save to server
+  const saveToServer = async () => {
+    if (!hasEdited.current) return;
+
+    setStatus("saving");
     try {
-      const res = await fetch("/api/page", {
+      const res = await fetch("/api/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          content: codeRef.current,
-          updated_at: now(),
           page_id,
+          content: codeRef.current,
+          updated_at: Date.now(),
         }),
       });
 
       if (!res.ok) throw new Error("Save failed");
 
-      const data = await res.json();
-
-      if (data.conflict) {
-        setStatus("conflict");
-        console.warn("⚠️ Conflict detected: newer version on server");
-        return;
-      }
-
       setStatus("saved");
-      localStorage.setItem(
-        CACHE_KEY,
-        JSON.stringify({ content: codeRef.current, updated_at: now() })
-      );
+      saveToCache(page_id, codeRef.current, true);
       hasEdited.current = false;
+
+      if (showPreview && iframeRef.current) {
+        iframeRef.current.srcdoc = codeRef.current;
+      }
     } catch (err) {
-      console.error("❌ Save error:", err);
+      console.error("Save error:", err);
       setStatus("idle");
     }
   };
@@ -114,18 +106,21 @@ export default function Editor({
     });
   };
 
+  if (!mounted) return null; // Prevent SSR mismatch
+
   return (
     <div className="relative flex h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
+      {/* Loading overlay */}
       {loading && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white bg-opacity-90">
-          <div className="w-16 h-16 border-4 border-orange-300 border-t-orange-500 rounded-full animate-spin mb-4"></div>
-          <p className="text-center text-gray-700 max-w-xs">
-            Loading your code editor...
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 z-50">
+          <div className="w-12 h-12 border-4 border-orange-300 border-t-orange-500 rounded-full animate-spin mb-4" />
+          <p className="text-gray-600 text-sm text-center max-w-xs">
+            Loading editor... This may depend on text size or connection speed.
           </p>
         </div>
       )}
 
-      {/* Left side: Code editor */}
+      {/* Editor Panel */}
       <div className="flex-1 flex flex-col border-r border-orange-200">
         <div className="flex items-center gap-2 px-6 py-4 bg-[#FAF9F6] border-b border-orange-200">
           <Code2 className="w-5 h-5 text-orange-400" />
@@ -139,9 +134,10 @@ export default function Editor({
               {showPreview ? "Hide Preview" : "Show Preview"}
             </button>
 
-            {status === "saving" && <span className="text-sm text-gray-500 animate-pulse">Saving...</span>}
+            {status === "saving" && (
+              <span className="text-sm text-gray-500 animate-pulse">Saving...</span>
+            )}
             {status === "saved" && <span className="text-sm text-green-600">✓ Saved</span>}
-            {status === "conflict" && <span className="text-sm text-red-600">⚠️ Conflict</span>}
           </div>
         </div>
 
@@ -155,7 +151,7 @@ export default function Editor({
         </div>
       </div>
 
-      {/* Right side: Preview */}
+      {/* Live Preview */}
       {showPreview && (
         <div className="flex-1 flex flex-col bg-orange-50">
           <div className="flex items-center gap-2 px-6 py-4 bg-[#FAF9F6] border-b border-orange-200">
