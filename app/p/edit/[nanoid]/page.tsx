@@ -23,8 +23,7 @@ export default async function Page({
         <Header user={{ name: "Knee" }} />
         <div className="pt-5 text-black">
           
-          <div className="text-black">test</div>
-          <Editor page_value={page.html_data.components.raw_html.value}/>
+          <Editor page_value={page.html_data.components.raw_html.value} server_updated_at= {page.updated_at} />
 
         </div>
       </div>
