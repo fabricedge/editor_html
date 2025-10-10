@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 
+import Header from '../app/ui/header'
 const HomePage = () => {
   
 
@@ -73,6 +74,7 @@ const HomePage = () => {
           opacity: 1;
         }
       `}</style>
+      <Header user={{ name: "Knee" }} />
 
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center relative hero-pattern pt-20">

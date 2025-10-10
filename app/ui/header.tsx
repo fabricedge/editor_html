@@ -98,13 +98,13 @@ export default function Header({ user }: { user?: { name: string } }) {
 
                   <div className="text-white space-x-8 md:space-x-16 hidden md:flex">
                     <Link
-                      href="/pg/create"
+                      href="/p/create"
                       className="hover-text-maroon-400 transition-colors duration-300"
                     >
                       create
                     </Link>
                     <Link
-                      href="/pg"
+                      href="/p/list"
                       className="hover-text-maroon-400 transition-colors duration-300"
                     >
                       pages

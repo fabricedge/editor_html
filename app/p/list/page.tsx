@@ -1,6 +1,7 @@
 import Image from "next/image";
 
-import { getPosts } from '../lib/pages/user/data'
+import Header from '../../ui/header'
+import { getPosts } from '../../lib/pages/user/data'
 export default async function Pg({
   params,
 }: {
@@ -9,7 +10,9 @@ export default async function Pg({
   const { id } = await params
   const posts = await getPosts()
   return (
+    
     <div>
+      <Header user={{ name: "Knee" }} />
       <main className="flex flex-col items-center justify-between p-8 ">
         <div className="text-black"> Posts: </div>
         <h1 className="text-3xl  text-black font-bold ">

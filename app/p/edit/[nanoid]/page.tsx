@@ -5,6 +5,8 @@ import { getPage } from '../../../lib/pages/user/data'
 import Editor from '../../../ui/editor'
 import { redirect } from "next/navigation";
 
+import Header from '../../../ui/header'
+import { createClient } from '../../../utils/supabase/server';
 
 //todo: Check Cookies for the User soo i can CheckPermission
 export default async function Page({
@@ -17,9 +19,14 @@ export default async function Page({
     const page = await getPage(nanoid);
     
     return (
-      <div className="pt-5">
-        <div className="text-black">test</div>
-        <Editor page={page.html_data.components.raw_html.value}/>
+      <div>
+        <Header user={{ name: "Knee" }} />
+        <div className="pt-5 text-black">
+          
+          <div className="text-black">test</div>
+          <Editor page={page.html_data.components.raw_html.value}/>
+
+        </div>
       </div>
     );
   } catch (err) {
