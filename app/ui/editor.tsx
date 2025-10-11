@@ -8,6 +8,7 @@ interface EditorProps {
   page_value: string;
   page_id?: string;
   server_updated_at?: string;
+  page: string;
 }
 
 const MAX_CHARACTERS = 10000;
@@ -16,6 +17,7 @@ export default function Editor({
   page_value,
   page_id = "default",
   server_updated_at,
+  page,
 }: EditorProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const codeRef = useRef<string>("");
@@ -62,16 +64,17 @@ export default function Editor({
 
   const saveToServer = async () => {
     if (!hasEdited.current) return;
-
+    
     setStatus("saving");
     try {
-      const res = await fetch("/api/", {
+      const res = await fetch("/api/edit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           page_id,
           content: codeRef.current,
           updated_at: Date.now(),
+          page,
         }),
       });
 
