@@ -100,7 +100,7 @@ export default function Editor({
 
   if (!mounted) return null;
 
-  const rootElement = document.getElementById('root');
+  //const rootElement = document.getElementById('root');
   return (
     <div className="relative flex flex-col md:flex-row h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
       {/* Loading overlay */}
