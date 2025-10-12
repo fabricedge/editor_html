@@ -22,7 +22,8 @@ export default async function Page({
       <div>
         <Header user={{ name: "Knee" }} />
         <div className="pt-5 text-black">
-          <Editor page={page} page_value={page.html_data.components.raw_html.value} page_id={page.id} server_updated_at={page.updated_at} />
+          <Editor //page={page} 
+          page_value={page.html_data.components.raw_html.value} page_id={nanoid} server_updated_at={page.updated_at} />
         </div>
       </div>
     );

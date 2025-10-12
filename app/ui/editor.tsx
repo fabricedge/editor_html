@@ -12,7 +12,7 @@ interface EditorProps {
   page_value: string;
   page_id?: string;
   server_updated_at?: string;
-  page: string;
+ // page: string;
 }
 
 const MAX_CHARACTERS = 10000;
@@ -22,7 +22,7 @@ export default function Editor({
   page_value,
   page_id = "default",
   server_updated_at,
-  page,
+  //page,
 }: EditorProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const codeRef = useRef<string>("");
