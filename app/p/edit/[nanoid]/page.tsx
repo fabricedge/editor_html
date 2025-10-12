@@ -19,12 +19,11 @@ export default async function Page({
     const page = await getPage(nanoid);
     
     return (
-      <div>
+      <div className="">
         <Header user={{ name: "Knee" }} />
-        <div className="pt-5 text-black">
           <Editor //page={page} 
           page_value={page.html_data.components.raw_html.value} page_id={nanoid} server_updated_at={page.updated_at} />
-        </div>
+        
       </div>
     );
   } catch (err) {
