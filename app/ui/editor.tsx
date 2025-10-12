@@ -54,6 +54,8 @@ export default function Editor({
 
   function handleEditorChange(value: string | undefined, event: any) {
     console.log('here is the current model value:', value);
+
+     console.log('here is the current model event:', event);
     // save to db
   }
 
