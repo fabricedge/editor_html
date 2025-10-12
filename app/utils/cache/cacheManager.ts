@@ -25,7 +25,7 @@ export function loadFromCache(pageId: string): CachedData | null {
 }
 
 export function saveToCache(pageId: string, content: string, savedInDB: boolean = false): void {
-  console.log("arguments save to cache:", arguments)
+  //console.log("arguments save to cache:", arguments)
   try {
     const data: CachedData = {
       content,
