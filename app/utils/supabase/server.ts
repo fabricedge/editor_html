@@ -6,7 +6,11 @@ export async function createClient() {
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    // the publishable key has to not have RLS in this case*
+  
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+
+    // this is problably related related to cookies from user
     {
       cookies: {
         getAll() {

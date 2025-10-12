@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   const { content } = await req.json();
 
-  console.log("Saving content to database:", content);
+  //console.log("Saving content to database:", content);
   
   // Example: save to Supabase or DB
   // const supabase = createClient();

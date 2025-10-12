@@ -3,6 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Code2, Eye, Play } from "lucide-react";
 import { loadFromCache, saveToCache, isCacheNewer } from "../utils/cache/cacheManager";
+import EditorM from '@monaco-editor/react';
+import React from 'react';
+import DOMPurify from 'dompurify';
+import ReactDOM from 'react-dom';
 
 interface EditorProps {
   page_value: string;
@@ -13,6 +17,7 @@ interface EditorProps {
 
 const MAX_CHARACTERS = 10000;
 
+
 export default function Editor({
   page_value,
   page_id = "default",
@@ -22,10 +27,9 @@ export default function Editor({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const codeRef = useRef<string>("");
   const hasEdited = useRef(false);
-  const saveTimer = useRef<NodeJS.Timeout | null>(null);
 
   const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
-  const [showPreview, setShowPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [charCount, setCharCount] = useState(0);
@@ -48,50 +52,41 @@ export default function Editor({
     setLoading(false);
   }, [mounted, page_value, page_id, server_updated_at]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // Limita o valor ao máximo permitido
-    const value = e.target.value.slice(0, MAX_CHARACTERS);
-    codeRef.current = value;
-    setCharCount(value.length);
+  function handleEditorChange(value: string | undefined, event: any) {
+    console.log('here is the current model value:', value);
+    // save to db
+  }
 
-    hasEdited.current = true;
-    saveToCache(page_id, value, false);
-    setStatus("saving");
-
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => saveToServer(), 2000);
-  };
-
-  const saveToServer = async () => {
-    if (!hasEdited.current) return;
+  // const saveToServer = async () => {
+  //   if (!hasEdited.current) return;
     
-    setStatus("saving");
-    try {
-      const res = await fetch("/api/edit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          page_id,
-          content: codeRef.current,
-          updated_at: Date.now(),
-          page,
-        }),
-      });
+  //   setStatus("saving");
+  //   try {
+  //     const res = await fetch("/api/page/edit", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         page_id,
+  //         content: codeRef.current,
+  //         updated_at: Date.now(),
+  //         page,
+  //       }),
+  //     });
 
-      if (!res.ok) throw new Error("Save failed");
+  //     if (!res.ok) throw new Error("Save failed");
 
-      setStatus("saved");
-      saveToCache(page_id, codeRef.current, true);
-      hasEdited.current = false;
+  //     setStatus("saved");
+  //     saveToCache(page_id, codeRef.current, true);
+  //     hasEdited.current = false;
 
-      if (showPreview && iframeRef.current) {
-        iframeRef.current.srcdoc = codeRef.current;
-      }
-    } catch (err) {
-      console.error("Save error:", err);
-      setStatus("idle");
-    }
-  };
+  //     if (showPreview && iframeRef.current) {
+  //       iframeRef.current.srcdoc = codeRef.current;
+  //     }
+  //   } catch (err) {
+  //     console.error("Save error:", err);
+  //     setStatus("idle");
+  //   }
+  // };
 
   const togglePreview = () => {
     setShowPreview((prev) => {
@@ -105,6 +100,7 @@ export default function Editor({
 
   if (!mounted) return null;
 
+  const rootElement = document.getElementById('root');
   return (
     <div className="relative flex flex-col md:flex-row h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50">
       {/* Loading overlay */}
@@ -146,15 +142,14 @@ export default function Editor({
         </div>
 
         <div className="flex-1 p-4 md:p-6 bg-[#FAF9F6] flex flex-col">
-          <textarea
-            defaultValue={codeRef.current}
-            onChange={handleChange}
-            maxLength={MAX_CHARACTERS} // Garante limite exato
-            className="w-full flex-1 bg-orange-50 text-gray-800 font-mono text-sm rounded-lg border border-orange-200 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-300 resize-none shadow-sm placeholder-gray-400"
-            spellCheck={false}
-          />
-
-        
+          <EditorM
+            defaultLanguage="html"
+            defaultValue={page_value}
+            onChange={handleEditorChange}
+            // onMount={handleEditorDidMount}
+            // beforeMount={handleEditorWillMount}
+            // onValidate={handleEditorValidation}
+          />     
         </div>
       </div>
 
@@ -167,13 +162,15 @@ export default function Editor({
             <Play className="w-4 h-4 text-orange-400 ml-auto" />
           </div>
           <div className="flex-1 p-4 md:p-6 bg-gradient-to-br from-white to-orange-50">
-            <iframe
+            {/* <iframe
               ref={iframeRef}
               className="w-full h-full bg-[#FAF9F6] rounded-lg shadow-lg border border-orange-200"
               sandbox="allow-scripts"
               title="Code Preview"
-              srcDoc={codeRef.current}
-            />
+              srcDoc={page_value}
+            /> */}
+                { <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(page_value) }} /> }
+           
           </div>
         </div>
       )}
