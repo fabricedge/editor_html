@@ -20,7 +20,7 @@ export default function Editor({
 }: EditorProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const codeRef = useRef<string>("");
-  const editorRef = useRef<any>(null);
+  const editorRef = useRef<import("monaco-editor").editor.IStandaloneCodeEditor | null>(null);
 
   const [activeTab, setActiveTab] = useState<"editor" | "preview">("editor");
   const [mounted, setMounted] = useState(false);
