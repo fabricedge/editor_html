@@ -30,7 +30,13 @@ export default function Editor({
 
   // 🧩 Handle editor mounting
   function handleEditorDidMount(editor: import("monaco-editor").editor.IStandaloneCodeEditor) {
+    // Set initial value to respect MAX_CHARACTERS
+    const initialValue = codeRef.current.slice(0, MAX_CHARACTERS);
+    editor.setValue(initialValue);
+    setCharCount(initialValue.length);
+    setHasContent(initialValue.trim().length > 0);
     editorRef.current = editor;
+    
 
     editor.onDidChangeModelContent(() => {
       const value = editor.getValue();
