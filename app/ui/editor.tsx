@@ -52,7 +52,7 @@ export default function Editor({
     setLoading(false);
   }, [mounted, page_value, page_id, server_updated_at]);
 
-  function handleEditorChange(value: string | undefined, event: any) {
+  function handleEditorChange(value: string | undefined, event: string) {
     console.log('here is the current model value:', value);
 
      console.log('here is the current model event:', event);
@@ -147,7 +147,7 @@ export default function Editor({
           <EditorM
             defaultLanguage="html"
             defaultValue={page_value}
-            onChange={handleEditorChange}
+            //onChange={handleEditorChange}
             // onMount={handleEditorDidMount}
             // beforeMount={handleEditorWillMount}
             // onValidate={handleEditorValidation}
