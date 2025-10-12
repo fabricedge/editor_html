@@ -26,6 +26,7 @@ export default function Editor({
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [charCount, setCharCount] = useState(0);
+  const [hasContent, setHasContent] = useState(false);
 
   // 🧩 Handle editor mounting
   function handleEditorDidMount(editor: any, monaco: any) {
@@ -34,6 +35,7 @@ export default function Editor({
     editor.onDidChangeModelContent(() => {
       const value = editor.getValue();
       setCharCount(value.length);
+      setHasContent(value.trim().length > 0);
 
       if (value.length > MAX_CHARACTERS) {
         const truncated = value.substring(0, MAX_CHARACTERS);
@@ -67,12 +69,13 @@ export default function Editor({
     }
 
     setCharCount(codeRef.current.length);
+    setHasContent(codeRef.current.trim().length > 0);
     setLoading(false);
   }, [mounted, page_value, page_id, server_updated_at]);
 
   // 🔄 Update iframe preview
   const updatePreview = () => {
-    if (iframeRef.current) {
+    if (iframeRef.current && codeRef.current) {
       iframeRef.current.srcdoc = codeRef.current;
     }
   };
@@ -138,7 +141,7 @@ export default function Editor({
                     : "text-gray-500"
                 }
               >
-                {charCount} / {MAX_CHARACTERS} characters
+                {charCount.toLocaleString()} / {MAX_CHARACTERS.toLocaleString()}
               </span>
             </div>
           </div>
@@ -174,15 +177,23 @@ export default function Editor({
             <span className="text-sm font-medium text-gray-700">Result</span>
           </div>
 
-          {/* Preview iframe */}
-          <div className="flex-1 overflow-hidden bg-white">
-            <iframe
-              ref={iframeRef}
-              className="w-full h-full border-0"
-              sandbox="allow-scripts"
-              title="Preview"
-              srcDoc={codeRef.current}
-            />
+          {/* Preview iframe or Empty State */}
+          <div className="flex-1 overflow-hidden bg-white relative">
+            {hasContent ? (
+              <iframe
+                ref={iframeRef}
+                className="w-full h-full border-0"
+                sandbox="allow-scripts"
+                title="Preview"
+                srcDoc={codeRef.current}
+              />
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                <Eye className="w-16 h-16 mb-4 opacity-20" />
+                <p className="text-sm font-medium">No content to preview</p>
+                <p className="text-xs mt-1">Start typing in the editor</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
