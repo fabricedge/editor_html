@@ -29,7 +29,7 @@ export default function Editor({
   const [hasContent, setHasContent] = useState(false);
 
   // 🧩 Handle editor mounting
-  function handleEditorDidMount(editor: any, monaco: any) {
+  function handleEditorDidMount(editor: import("monaco-editor").editor.IStandaloneCodeEditor) {
     editorRef.current = editor;
 
     editor.onDidChangeModelContent(() => {
@@ -39,13 +39,16 @@ export default function Editor({
 
       if (value.length > MAX_CHARACTERS) {
         const truncated = value.substring(0, MAX_CHARACTERS);
-        editor.executeEdits(null, [
-          {
-            range: editor.getModel().getFullModelRange(),
-            text: truncated,
-          },
-        ]);
-        alert(`Maximum length of ${MAX_CHARACTERS} characters reached.`);
+        const model = editor.getModel();
+        if (model) {
+          editor.executeEdits(null, [
+            {
+              range: model.getFullModelRange(),
+              text: truncated,
+            },
+          ]);
+          alert(`Maximum length of ${MAX_CHARACTERS} characters reached.`);
+        }
       }
 
       codeRef.current = value.slice(0, MAX_CHARACTERS);
