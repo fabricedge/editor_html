@@ -31,9 +31,3 @@ export async function createClient() {
     }
   )
 }
-
-export async function editDbValue() {
-  //handle save to db logic
-  // CRUD 
-
-}

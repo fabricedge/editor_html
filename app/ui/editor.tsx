@@ -45,7 +45,7 @@ export default function Editor({
     setHasContent(initialValue.trim().length > 0);
     editorRef.current = editor;
 
-    editor.onDidChangeModelContent(() => {
+    editor.onDidChangeModelContent(async () => {
       const value = editor.getValue();
       setCharCount(value.length);
       setHasContent(value.trim().length > 0);
@@ -55,17 +55,35 @@ export default function Editor({
         const model = editor.getModel();
         if (model) {
           editor.executeEdits(null, [
-            {
-              range: model.getFullModelRange(),
-              text: truncated,
-            },
+            { range: model.getFullModelRange(), text: truncated },
           ]);
           alert(`Maximum length of ${MAX_CHARACTERS} characters reached.`);
         }
       }
 
       codeRef.current = value.slice(0, MAX_CHARACTERS);
-      saveToCache(page_id, codeRef.current, true);
+
+      // ✅ SUBMIT before saving to cache
+      try {
+        const res = await fetch("/api/page/edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            page_id,
+            content: codeRef.current,
+          }),
+        });
+
+        if (!res.ok) {
+          console.error("Failed to submit to API");
+          return;
+        }
+
+        // ✅ Only after the API succeeds, save to cache
+        saveToCache(page_id, codeRef.current, true);
+      } catch (err) {
+        console.error("Error while submitting:", err);
+      }
     });
   }
 
@@ -77,6 +95,7 @@ export default function Editor({
     if (!mounted) return;
 
     const cached = loadFromCache(page_id);
+     // todo: server_updated_at has the value to be checked again in order to make sense
     if (isCacheNewer(cached, server_updated_at)) {
       codeRef.current = cached!.content.slice(0, MAX_CHARACTERS);
     } else {

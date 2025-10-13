@@ -38,6 +38,8 @@ export function saveToCache(pageId: string, content: string, savedInDB: boolean 
   }
 }
 
+
+
 export function isCacheNewer(cache: CachedData | null, serverUpdatedAt?: string): boolean {
   if (!cache) return false;
   if (!cache.savedInDB) return false; // Only consider cached versions that were saved in DB

@@ -8,12 +8,12 @@ export default function Header({ user }: { user?: { name: string } }) {
   const toggleMobileMenu = () => setMobileOpen(!mobileOpen);
 
   return (
-    <header className="w-full">
-      <nav className="bg-white/95 backdrop-blur-md border-b border-black/10 shadow-sm">
-        <div className="mx-auto max-w-7xl px-6 py-3 flex items-center justify-center relative">
+    <header className="w-full p-0">
+      <nav className="bg-white/95 backdrop-blur-md border-b border-black/10 shadow-sm ">
+        <div className="mx-auto max-w-7xl  flex items-center justify-center relative ">
           {/* Logo / Home */}
-          <div className="flex items-center justify-center space-x-8 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-400 text-2xl font-semibold">
-            <Link href="/" className="px-8 md:px-14">
+          <div className="flex items-center justify-center space-x-8 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-400 text-2xl font-semibold p-0">
+            <Link href="/" className="px-8 md:px-14 p-0">
               home
             </Link>
 
@@ -69,7 +69,7 @@ export default function Header({ user }: { user?: { name: string } }) {
         {/* Mobile Menu */}
         <div
           className={`overflow-hidden transition-all duration-300 text-center text-gray-700 md:hidden ${
-            mobileOpen ? "max-h-40 opacity-100 py-3" : "max-h-0 opacity-0 py-0"
+            mobileOpen ? "max-h-40 opacity-100 " : "max-h-0 opacity-0 py-0"
           }`}
         >
           <Link
