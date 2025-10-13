@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AlertCircle, Code2, Eye } from "lucide-react";
+import { Code2, Eye } from "lucide-react";
 import { loadFromCache, saveToCache, isCacheNewer } from "../utils/cache/cacheManager";
 import EditorM from "@monaco-editor/react";
 
@@ -29,14 +29,10 @@ export default function Editor({
   const [hasContent, setHasContent] = useState(false);
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
 
-  // 🧠 NEW: double-tap editor activation on mobile
-  const [mobileEditorActive, setMobileEditorActive] = useState(false);
-  const lastTapRef = useRef<number>(0);
-
-  // 🧠 Detect device
+  // 🧠 Detecta se está em modo desktop ou mobile
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 768);
-    handleResize();
+    handleResize(); // roda na primeira montagem
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -73,12 +69,13 @@ export default function Editor({
     });
   }
 
-  // 🧠 Lifecycle
+  // 🧠 Mount lifecycle
   useEffect(() => setMounted(true), []);
 
-  // 🗃 Load from cache or server
+  // 🗃 Load from cache or server value, truncated
   useEffect(() => {
     if (!mounted) return;
+
     const cached = loadFromCache(page_id);
     if (isCacheNewer(cached, server_updated_at)) {
       codeRef.current = cached!.content.slice(0, MAX_CHARACTERS);
@@ -86,31 +83,23 @@ export default function Editor({
       codeRef.current = page_value.slice(0, MAX_CHARACTERS);
       saveToCache(page_id, codeRef.current, true);
     }
+
     setCharCount(codeRef.current.length);
     setHasContent(codeRef.current.trim().length > 0);
     setLoading(false);
   }, [mounted, page_value, page_id, server_updated_at]);
 
-  // 🔄 Update preview
+  // 🔄 Update iframe preview
   const updatePreview = () => {
     if (iframeRef.current && codeRef.current) {
       iframeRef.current.srcdoc = codeRef.current;
     }
   };
 
-  // 📱 Double-tap handler
-  const handleDoubleTap = () => {
-    const now = Date.now();
-    if (now - lastTapRef.current < 300) {
-      setMobileEditorActive(true);
-    }
-    lastTapRef.current = now;
-  };
-
   if (!mounted) return null;
 
   return (
-    <div className="flex flex-col h-screen bg-white px-8 py-2 relative select-none">
+    <div className="flex flex-col h-screen bg-white px-8 py-2 relative">
       {/* Loading overlay */}
       {loading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-50">
@@ -119,7 +108,7 @@ export default function Editor({
         </div>
       )}
 
-      {/* Tabs (mobile only) */}
+      {/* Tabs (only visible on mobile) */}
       {!isDesktop && (
         <div className="flex border-b border-gray-200 bg-white z-10">
           <button
@@ -150,17 +139,11 @@ export default function Editor({
         </div>
       )}
 
-      {/* Layout */}
+      {/* Layout principal */}
       <div className="flex-1 flex overflow-hidden mt-0 shadow-2xl shadow-orange-300 rounded-lg pb-5">
         {/* Editor */}
         {(isDesktop || activeTab === "editor") && (
-          <div
-            className={`flex flex-col flex-1 ${
-              isDesktop ? "w-1/2 border-r" : ""
-            } border-gray-200 relative`}
-            onTouchStart={!isDesktop ? handleDoubleTap : undefined}
-          >
-            {/* Header */}
+          <div className={`flex flex-col flex-1 ${isDesktop ? "w-1/2 border-r" : ""} border-gray-200`}>
             <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-200">
               <Code2 className="w-4 h-4 text-gray-600" />
               <span className="text-sm font-medium text-gray-700">index.html</span>
@@ -177,31 +160,21 @@ export default function Editor({
               </div>
             </div>
 
-            {/* Editor Area */}
-            <div className="flex-1 overflow-hidden relative">
-              {isDesktop || mobileEditorActive ? (
-                <EditorM
-                  defaultLanguage="html"
-                  value={codeRef.current}
-                  options={{
-                    minimap: { enabled: true },
-                    fontSize: 14,
-                    lineNumbers: "on",
-                    wordWrap: "on",
-                    scrollBeyondLastLine: false,
-                    padding: { top: 10, bottom: 10 },
-                    tabSize: 2,
-                  }}
-                  onMount={handleEditorDidMount}
-                />
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 bg-gray-50">
-                  <AlertCircle className="w-25 h-25 mb-3 opacity-80 bg-yellow-700 rounded-lg" />                                                
-                  <p className="text-lg font-medium">Double tap to start editing</p>
-                  <p className="text-lg mt-1">Tap twice quickly on this area</p>
-                   <Code2 className="w-12 h-12 mb-3 opacity-30" />  
-                </div>
-              )}
+            <div className="flex-1 overflow-hidden">
+              <EditorM
+                defaultLanguage="html"
+                value={codeRef.current}
+                options={{
+                  minimap: { enabled: true },
+                  fontSize: 14,
+                  lineNumbers: "on",
+                  wordWrap: "on",
+                  scrollBeyondLastLine: false,
+                  padding: { top: 10, bottom: 10 },
+                  tabSize: 2,
+                }}
+                onMount={handleEditorDidMount}
+              />
             </div>
           </div>
         )}
@@ -213,6 +186,7 @@ export default function Editor({
               <Eye className="w-4 h-4 text-gray-600" />
               <span className="text-sm font-medium text-gray-700">Result</span>
             </div>
+
             <div className="flex-1 overflow-hidden bg-white relative">
               {hasContent ? (
                 <iframe
