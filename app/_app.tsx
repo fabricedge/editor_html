@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
-}: AppProps & { pageProps: { session: any } }) {
+}: AppProps & { pageProps: { session: JSON } }) {
   return (
     <SessionProvider session={session}>
       <Component {...pageProps} />
