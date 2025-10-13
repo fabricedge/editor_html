@@ -11,7 +11,7 @@ interface EditorProps {
   server_updated_at?: string;
 }
 
-const MAX_CHARACTERS = 10000000;
+const MAX_CHARACTERS = 10_000_000;
 
 export default function Editor({
   page_value,
@@ -27,16 +27,23 @@ export default function Editor({
   const [loading, setLoading] = useState(true);
   const [charCount, setCharCount] = useState(0);
   const [hasContent, setHasContent] = useState(false);
+  const [isDesktop, setIsDesktop] = useState<boolean>(false);
+
+  // 🧠 Detecta se está em modo desktop ou mobile
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    handleResize(); // roda na primeira montagem
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // 🧩 Handle editor mounting
   function handleEditorDidMount(editor: import("monaco-editor").editor.IStandaloneCodeEditor) {
-    // Set initial value to respect MAX_CHARACTERS
     const initialValue = codeRef.current.slice(0, MAX_CHARACTERS);
     editor.setValue(initialValue);
     setCharCount(initialValue.length);
     setHasContent(initialValue.trim().length > 0);
     editorRef.current = editor;
-    
 
     editor.onDidChangeModelContent(() => {
       const value = editor.getValue();
@@ -92,7 +99,7 @@ export default function Editor({
   if (!mounted) return null;
 
   return (
-    <div className="flex flex-col h-screen bg-white px-8 py-2">
+    <div className="flex flex-col h-screen bg-white px-8 py-2 relative">
       {/* Loading overlay */}
       {loading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-50">
@@ -101,110 +108,104 @@ export default function Editor({
         </div>
       )}
 
-      {/* Mobile Tabs */}
-      <div className="md:hidden flex border-b border-gray-200 bg-white">
-        <button
-          onClick={() => setActiveTab("editor")}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${
-            activeTab === "editor"
-              ? "text-orange-600 border-b-2 border-orange-600"
-              : "text-gray-600 hover:text-gray-800"
-          }`}
-        >
-          <Code2 className="w-4 h-4" />
-          Editor
-        </button>
-        <button
-          onClick={() => {
-            setActiveTab("preview");
-            updatePreview();
-          }}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${
-            activeTab === "preview"
-              ? "text-orange-600 border-b-2 border-orange-600"
-              : "text-gray-600 hover:text-gray-800"
-          }`}
-        >
-          <Eye className="w-4 h-4" />
-          Preview
-        </button>
-      </div>
+      {/* Tabs (only visible on mobile) */}
+      {!isDesktop && (
+        <div className="flex border-b border-gray-200 bg-white z-10">
+          <button
+            onClick={() => setActiveTab("editor")}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${
+              activeTab === "editor"
+                ? "text-orange-600 border-b-2 border-orange-600"
+                : "text-gray-600 hover:text-gray-800"
+            }`}
+          >
+            <Code2 className="w-4 h-4" />
+            Editor
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("preview");
+              updatePreview();
+            }}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${
+              activeTab === "preview"
+                ? "text-orange-600 border-b-2 border-orange-600"
+                : "text-gray-600 hover:text-gray-800"
+            }`}
+          >
+            <Eye className="w-4 h-4" />
+            Preview
+          </button>
+        </div>
+      )}
 
-      {/* Main Content */}
+      {/* Layout principal */}
       <div className="flex-1 flex overflow-hidden mt-0 shadow-2xl shadow-orange-300 rounded-lg pb-5">
-        {/* Editor Panel */}
-        <div
-          className={`${
-            activeTab === "editor" ? "flex" : "hidden"
-          } md:flex flex-col flex-1 md:w-1/2 border-r border-gray-200`}
-        >
-          {/* Desktop Header */}
-          <div className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-200">
-            <Code2 className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">index.html</span>
-            <div className="ml-auto text-xs text-gray-500">
-              <span
-                className={
-                  charCount >= MAX_CHARACTERS
-                    ? "text-red-600 font-semibold"
-                    : "text-gray-500"
-                }
-              >
-                {charCount.toLocaleString()} / {MAX_CHARACTERS.toLocaleString()}
-              </span>
+        {/* Editor */}
+        {(isDesktop || activeTab === "editor") && (
+          <div className={`flex flex-col flex-1 ${isDesktop ? "w-1/2 border-r" : ""} border-gray-200`}>
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-200">
+              <Code2 className="w-4 h-4 text-gray-600" />
+              <span className="text-sm font-medium text-gray-700">index.html</span>
+              <div className="ml-auto text-xs text-gray-500">
+                <span
+                  className={
+                    charCount >= MAX_CHARACTERS
+                      ? "text-red-600 font-semibold"
+                      : "text-gray-500"
+                  }
+                >
+                  {charCount.toLocaleString()} / {MAX_CHARACTERS.toLocaleString()}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-hidden">
+              <EditorM
+                defaultLanguage="html"
+                value={codeRef.current}
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 14,
+                  lineNumbers: "on",
+                  wordWrap: "on",
+                  scrollBeyondLastLine: false,
+                  padding: { top: 10, bottom: 10 },
+                  tabSize: 4,
+                }}
+                onMount={handleEditorDidMount}
+              />
             </div>
           </div>
+        )}
 
-          {/* Editor */}
-          <div className="flex-1 overflow-hidden">
-            <EditorM
-              defaultLanguage="html"
-              value={codeRef.current}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                lineNumbers: "on",
-                wordWrap: "on",
-                scrollBeyondLastLine: false,
-                padding: { top: 10, bottom: 10 },
-                tabSize: 4,
-              }}
-              onMount={handleEditorDidMount}
-            />
-          </div>
-        </div>
+        {/* Preview */}
+        {(isDesktop || activeTab === "preview") && (
+          <div className={`flex flex-col flex-1 ${isDesktop ? "w-1/2" : ""} bg-gray-50`}>
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-200">
+              <Eye className="w-4 h-4 text-gray-600" />
+              <span className="text-sm font-medium text-gray-700">Result</span>
+            </div>
 
-        {/* Preview Panel */}
-        <div
-          className={`${
-            activeTab === "preview" ? "flex" : "hidden"
-          } md:flex flex-col flex-1 md:w-1/2 bg-gray-50`}
-        >
-          {/* Desktop Header */}
-          <div className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-200">
-            <Eye className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Result</span>
+            <div className="flex-1 overflow-hidden bg-white relative">
+              {hasContent ? (
+                <iframe
+                  ref={iframeRef}
+                  className="w-full h-full border-0"
+                  sandbox="allow-scripts"
+                  title="Preview"
+                  srcDoc={codeRef.current}
+                />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                  <Eye className="w-16 h-16 mb-4 opacity-20" />
+                  <p className="text-sm font-medium">No content to preview</p>
+                  <p className="text-xs mt-1">Start typing in the editor</p>
+                </div>
+              )}
+            </div>
           </div>
-
-          {/* Preview iframe or Empty State */}
-          <div className="flex-1 overflow-hidden bg-white relative">
-            {hasContent ? (
-              <iframe
-                ref={iframeRef}
-                className="w-full h-full border-0"
-                sandbox="allow-scripts"
-                title="Preview"
-                srcDoc={codeRef.current}
-              />
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
-                <Eye className="w-16 h-16 mb-4 opacity-20" />
-                <p className="text-sm font-medium">No content to preview</p>
-                <p className="text-xs mt-1">Start typing in the editor</p>
-              </div>
-            )}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
