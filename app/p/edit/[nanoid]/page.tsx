@@ -1,12 +1,12 @@
 
 "use server";
 import LikeButton from '../../../ui/like-button'
-import { getPage } from '../../../lib/pages/user/data'
+import { getPage } from '../../../lib/pages'
 import Editor from '../../../ui/editor'
 import { redirect } from "next/navigation";
 
 import Header from '../../../ui/header'
-import { createClient } from '../../../utils/supabase/server';
+//import { createClient } from '../../../utils/supabase/server';
 
 //todo: Check Cookies for the User soo i can CheckPermission
 export default async function Page({

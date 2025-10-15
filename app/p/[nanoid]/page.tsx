@@ -1,7 +1,7 @@
 
 "use server";
 //import LikeButton from '../../ui/like-button'
-import { getPage } from '../../lib/pages/user/data'
+import { getPage } from '../../lib/pages'
 //import Editor from '../../ui/editor'
 import { redirect } from "next/navigation";
 

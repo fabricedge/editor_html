@@ -1,6 +1,6 @@
 // /lib/data.ts
 
-import { createClient } from '../../../utils/supabase/server';
+import { createClient } from '../utils/supabase/server';
 
 type Page = {
   nanoid: string
@@ -18,9 +18,9 @@ const pages: Page[] = [
   { nanoid: '2', title: 'Next.js Rocks', content: 'Next.js makes SSR easy.', likes: 10 },
 ]
 // Retrieves a page based on a nanoid
-export async function getPage(nanoid: string) {
+export async function getUser(user_uuid: string) {
   const supabase = await createClient();
-  const { data: page, error } = await supabase.from("pages").select("*").eq("nanoid", nanoid).single();
+  const { data: page, error } = await supabase.from("users").select("*").eq("user_uuid", user_uuid).single();
   
   //console.log(page)
   if(error) {

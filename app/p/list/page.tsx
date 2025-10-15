@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import Header from '../../ui/header'
-import { getPosts } from '../../lib/pages/user/data'
+import { getPosts } from '../../lib/pages'
 export default async function Pg({
   params,
 }: {
