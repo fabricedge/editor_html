@@ -155,7 +155,6 @@ export default function Editor({
           >
             <Eye className="w-4 h-4" />
             Preview
-            <button defaultValue={server_updated_at}></button>
           </button>
         </div>
       )}
