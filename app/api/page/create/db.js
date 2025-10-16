@@ -1,5 +1,0 @@
-import { Client } from 'pg'
-
-const client = new Client({
-  url: 'postgresql://postgres.bjoobjfpjtejvijrvenf:gm75VbKWwCEjfdID@aws-0-sa-east-1.pooler.supabase.com:5432/postgres'
-})

@@ -1,9 +1,11 @@
-import { pgTable, text, uuid, boolean, jsonb, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, serial,  boolean, json, timestamp, PgJson } from "drizzle-orm/pg-core";
 
-export const pages = pgTable("pages", {
-  id: integer("id").primaryKey(),
-  nanoid: text("nanoid").notNull(), // ✅ this is a normal column
-  html_data: jsonb("html_data"),
+import { sql } from 'drizzle-orm' 
+
+export const pagesTable = pgTable("pages", {
+  id: serial("id").primaryKey(),
+  nanoid: text("nanoid").notNull().unique(), // ✅ this is a normal column
+  htmlData: text("html_data"),
   theme: text("theme"),
   owner: uuid("owner"),
   private: boolean("private"),

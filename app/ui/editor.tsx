@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { Code2, Eye } from "lucide-react";
 import { loadFromCache, saveToCache, isCacheNewer } from "../utils/cache/cacheManager";
 import EditorM from "@monaco-editor/react";
+import { pgTable, text, uuid, serial,  boolean, json, timestamp, PgJson } from "drizzle-orm/pg-core";
+import { MySqlDateTime } from "drizzle-orm/mysql-core";
 
 interface EditorProps {
   page_value: string;
   page_id?: string;
-  server_updated_at?: string;
+  server_updated_at?: Date;
 }
 
 const MAX_CHARACTERS = 10_000_000;
@@ -90,13 +92,12 @@ export default function Editor({
   // 🧠 Mount lifecycle
   useEffect(() => setMounted(true), []);
 
-  // 🗃 Load from cache or server value, truncated
   useEffect(() => {
     if (!mounted) return;
 
     const cached = loadFromCache(page_id);
-     // todo: server_updated_at has the value to be checked again in order to make sense
-    if (isCacheNewer(cached, server_updated_at)) {
+    // ✅ convert Date → string
+    if (isCacheNewer(cached, server_updated_at?.toISOString())) {
       codeRef.current = cached!.content.slice(0, MAX_CHARACTERS);
     } else {
       codeRef.current = page_value.slice(0, MAX_CHARACTERS);
@@ -154,6 +155,7 @@ export default function Editor({
           >
             <Eye className="w-4 h-4" />
             Preview
+            <button defaultValue={server_updated_at}></button>
           </button>
         </div>
       )}

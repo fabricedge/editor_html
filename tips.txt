@@ -1,0 +1,1 @@
+You have to use `page[0]` because the `getPage` function currently returns an array of pages from the database. This is how the Drizzle ORM `select` function works, even when you're only expecting a single result.

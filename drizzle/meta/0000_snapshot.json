@@ -1,5 +1,5 @@
 {
-  "id": "5f94c2fc-7d0b-44f3-8c02-f0e0a877ef19",
+  "id": "4a7814e4-048f-4b55-a93d-3bd568b064a5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,7 +10,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
         },
@@ -22,7 +22,7 @@
         },
         "html_data": {
           "name": "html_data",
-          "type": "jsonb",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -62,7 +62,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "pages_nanoid_unique": {
+          "name": "pages_nanoid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "nanoid"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
