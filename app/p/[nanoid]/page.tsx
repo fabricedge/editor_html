@@ -21,7 +21,7 @@ export default async function Page({
           <div  dangerouslySetInnerHTML={{ __html: parseHtmlDataValue(page.htmlData) }} />
       </div>
     );
-  } catch (err) {
+  } catch (_err) {
     // You can either redirect or show an error page
     redirect("/404");
   }

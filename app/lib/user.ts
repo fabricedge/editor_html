@@ -9,9 +9,7 @@ type Page = {
   likes: number
 }
 
-type PageSB = {
-  nanoid: string
-}
+
 
 const pages: Page[] = [
   { nanoid: '1', title: 'Hello React', content: 'This is a post about React.', likes: 5 },

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 //import { createClient } from '../../../utils/supabase/server';
 
-import { drizzle } from 'drizzle-orm/neon-http';
+
 import {test} from '../../../lib/testdb'
 
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
   try {
     test()
     // Return success

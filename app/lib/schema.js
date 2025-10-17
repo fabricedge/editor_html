@@ -1,6 +1,4 @@
-import { pgTable, text, uuid, serial,  boolean, json, timestamp, PgJson } from "drizzle-orm/pg-core";
-
-import { sql } from 'drizzle-orm' 
+import { pgTable, text, uuid, serial,  boolean, timestamp } from "drizzle-orm/pg-core"; 
 
 export const pagesTable = pgTable("pages", {
   id: serial("id").primaryKey(),

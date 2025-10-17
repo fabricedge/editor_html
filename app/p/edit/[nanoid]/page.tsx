@@ -1,16 +1,12 @@
 "use server";
 import Editor from '../../../ui/editor'
 import { redirect } from "next/navigation";
-import { pagesTable } from '../../../lib/schema';
 import Header from '../../../ui/header'
-import { drizzle } from 'drizzle-orm/neon-http';
-import { eq } from 'drizzle-orm';
 import { neon } from '@neondatabase/serverless';
 import { parseHtmlDataValue, getPage } from '../../../lib/pages';
 import * as schema from '../../../lib/schema';
 
 const sql = neon(process.env.DATABASE_URL!);
-const db = drizzle(sql, { schema });
 
 //todo: Check Cookies for the User soo i can CheckPermission
 export default async function Page({
@@ -27,11 +23,11 @@ export default async function Page({
       <div className="text-black">
         <Header  user={{ name: "Knee" }} />
            <Editor // getHtmlDataValue parses a string 
-          page_value={parseHtmlDataValue(page.htmlData)} page_id={nanoid} server_updated_at={page.updatedAt} />
+          page_value={parseHtmlDataValue(page.htmlData)} page_id={nanoid} server_updated_at={page.updatedAt.toISOString()} />
           
       </div>
     );
-  } catch (err) {
+  } catch (_err) {
     // You can either redirect or show an error page
     redirect("/404");
   }

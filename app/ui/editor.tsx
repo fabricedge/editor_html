@@ -4,13 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { Code2, Eye } from "lucide-react";
 import { loadFromCache, saveToCache, isCacheNewer } from "../utils/cache/cacheManager";
 import EditorM from "@monaco-editor/react";
-import { pgTable, text, uuid, serial,  boolean, json, timestamp, PgJson } from "drizzle-orm/pg-core";
-import { MySqlDateTime } from "drizzle-orm/mysql-core";
+
 
 interface EditorProps {
   page_value: string;
   page_id?: string;
-  server_updated_at?: Date;
+  server_updated_at?: string;
 }
 
 const MAX_CHARACTERS = 10_000_000;
@@ -97,7 +96,7 @@ export default function Editor({
 
     const cached = loadFromCache(page_id);
     // ✅ convert Date → string
-    if (isCacheNewer(cached, server_updated_at?.toISOString())) {
+    if (isCacheNewer(cached, server_updated_at)) {
       codeRef.current = cached!.content.slice(0, MAX_CHARACTERS);
     } else {
       codeRef.current = page_value.slice(0, MAX_CHARACTERS);
