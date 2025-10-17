@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 import {test} from '../../../lib/testdb'
 
-export async function POST(_request: Request) {
+export async function POST(request: Request) {
   try {
     test()
     // Return success
