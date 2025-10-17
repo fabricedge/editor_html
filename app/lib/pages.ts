@@ -35,7 +35,7 @@ export function parseHtmlDataValue(htmlData: string | null): string {
 
   try {
     const data = JSON.parse(htmlData);
-    return data.component?.raw_html?.value ?? "";
+    return data.components?.raw_html?.value ?? "";
   } catch (error) {
     console.error("Failed to parse htmlData:", error);
     return htmlData; // return original data if parsing fails

@@ -45,6 +45,7 @@ export default function Editor({
     setCharCount(initialValue.length);
     setHasContent(initialValue.trim().length > 0);
     editorRef.current = editor;
+    console.log(page_value, "page value")
 
     editor.onDidChangeModelContent(async () => {
       const value = editor.getValue();
