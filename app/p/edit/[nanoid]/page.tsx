@@ -6,24 +6,12 @@ import Header from '../../../ui/header'
 import { drizzle } from 'drizzle-orm/neon-http';
 import { eq } from 'drizzle-orm';
 import { neon } from '@neondatabase/serverless';
-import { getHtmlDataValue } from '../../../lib/pages';
+import { parseHtmlDataValue, getPage } from '../../../lib/pages';
 import * as schema from '../../../lib/schema';
 
 const sql = neon(process.env.DATABASE_URL!);
 const db = drizzle(sql, { schema });
 
-async function getPage(nanoid: string) {
-  const page = await db.query.pagesTable.findFirst({
-    where: eq(pagesTable.nanoid, nanoid),
-  });
-
-  if (!page) {
-    // Or handle as a not-found case
-    throw new Error('Page not found');
-  }
-
-  return page;
-}
 //todo: Check Cookies for the User soo i can CheckPermission
 export default async function Page({
   params,
@@ -39,7 +27,7 @@ export default async function Page({
       <div className="text-black">
         <Header  user={{ name: "Knee" }} />
            <Editor // getHtmlDataValue parses a string 
-          page_value={getHtmlDataValue(page.htmlData)} page_id={nanoid} server_updated_at={page.updatedAt} />
+          page_value={parseHtmlDataValue(page.htmlData)} page_id={nanoid} server_updated_at={page.updatedAt} />
           
       </div>
     );

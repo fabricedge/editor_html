@@ -6,46 +6,34 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import { eq, sql as sqld } from 'drizzle-orm';
 import { pagesTable } from './schema';
 import { nanoid } from 'nanoid'
+import { neon } from '@neondatabase/serverless';
+import * as schema from '../lib/schema';
 
-const db = drizzle(process.env.DATABASE_URL!);
-type Page = {
-  nanoid: string
-  title: string
-  content: string
-  likes: number
-}
+const sql = neon(process.env.DATABASE_URL!);
+const db = drizzle(sql, { schema });
 
-const pagestest: Page[] = [
-  { nanoid: '1', title: 'Hello React', content: 'This is a post about React.', likes: 5 },
-  { nanoid: '2', title: 'Next.js Rocks', content: 'Next.js makes SSR easy.', likes: 10 },
-]
 // Retrieves a page based on a nanoid
 export async function getPage(nanoid: string) {
-  const page = await db
-    .select()
-    .from(pagesTable)
-    .where(eq(pagesTable.nanoid, nanoid));
-  const results = await db.select().from(pagesTable);
-  console.log(results[0].htmlData); 
+  const page = await db.query.pagesTable.findFirst({
+    where: eq(pagesTable.nanoid, nanoid),
+  });
 
-  if (page.length === 0) {
+  if (!page) {
+    // Or handle as a not-found case
     throw new Error('Page not found');
   }
 
-  return results[0].htmlData
+  return page;
+}
+export async function createPage(nanoid: string) {
+  
+
+  return 1;
 }
 
-// async function selectUsers(withData: boolean) {
-//   return db
-//     .select({
-//       html_data: pagesTable.html_data,
-//       ...(withData ? { name: pagesTable.html_data } : {}),
-//     })
-//     .from(pagesTable);
-// }
-// const pagesTable = await selectUsers(true);
 
-export function getHtmlDataValue(htmlData: string | null): string {
+
+export function parseHtmlDataValue(htmlData: string | null): string {
   if (!htmlData) {
     return "";
   }

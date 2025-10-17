@@ -10,7 +10,7 @@ export async function test() {
   
   const page: typeof pagesTable.$inferInsert = {
     nanoid: generatedNanoId,
-    htmlData: JSON.stringify({ component: { raw_html: { value: "newssvaszslue" } } }),
+    htmlData: JSON.stringify({ components: { raw_html: { value: "newssvaszslue" } } }),
     };
   await db.insert(pagesTable).values(page);
   console.log('new page created')
