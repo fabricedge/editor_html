@@ -1,5 +1,13 @@
 import { pgTable, text, uuid, serial,  boolean, timestamp } from "drizzle-orm/pg-core"; 
 
+export type HtmlData = {
+  component: {                                                                                                                                                                              
+    raw_html: { 
+      value: string;
+    };
+  };
+};
+    
 export const pagesTable = pgTable("pages", {
   id: serial("id").primaryKey(),
   nanoid: text("nanoid").notNull().unique(), // ✅ this is a normal column
