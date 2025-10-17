@@ -44,3 +44,17 @@ export async function getPage(nanoid: string) {
 //     .from(pagesTable);
 // }
 // const pagesTable = await selectUsers(true);
+
+export function getHtmlDataValue(htmlData: string | null): string {
+  if (!htmlData) {
+    return "";
+  }
+
+  try {
+    const data = JSON.parse(htmlData);
+    return data.component?.raw_html?.value ?? "";
+  } catch (error) {
+    console.error("Failed to parse htmlData:", error);
+    return htmlData; // return original data if parsing fails
+  }
+}
