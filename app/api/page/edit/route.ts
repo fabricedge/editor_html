@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from '../../../lib/db';
-import { pagesTable, type HtmlData } from '../../../lib/schema';
+import { pagesTable} from '../../../lib/schema';
 import { eq } from 'drizzle-orm';
 
                                                                                                                                                                         
@@ -13,13 +13,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
      
-    const newHtmlData = `{
-      "component": {
-        "raw_html": {
-          "value": "${content}"
-        }
-      }
-    }`;
+    const newHtmlData = `{"components":{"raw_html":{"value":"${content}"}}}`;
 
     await db.update(pagesTable).set({
       htmlData: newHtmlData,
