@@ -11,27 +11,31 @@ export default async function Page({
 }: {
   params: { nanoid: string };
 }) {
+  let htmlContent = ""; // declare fallback
+
   try {
-    const { nanoid } = await params;
+    const { nanoid } = params;
     const page = await getPage(nanoid);
-    
-    return (
-      <div className="pt-5">
-        <style>{`
-          @layer base {
-            html, body {
-              overflow: hidden;
-            }
-          }
-        `}</style>
-        <div className="text-black align-items-center"></div>
-          <div  dangerouslySetInnerHTML={{ __html: parseHtmlDataValue(page.htmlData) }} />
-      </div>
-    );
-  } catch {
-    htmlContent = ""; // Fallback to empty string on error
+    htmlContent = parseHtmlDataValue(page.htmlData);
+  } catch (error) {
+    console.error(error);
+    htmlContent = "<p>Failed to load page.</p>"; // fallback HTML
   }
+
+  return (
+    <div className="pt-5">
+      <style>{`
+        @layer base {
+          html, body {
+            overflow: hidden;
+          }
+        }
+      `}</style>
+      <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+    </div>
+  );
 }
+
 
 
 export async function CheckPermission() {
