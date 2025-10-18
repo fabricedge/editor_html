@@ -51,9 +51,9 @@ export default function FormPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           page_id,
+          content: "<h1> Your First Page </h1>",
           theme: theme,
-          private: formData.isPrivate,
-          content: "<h1> Your First Page </h1>"
+          private: formData.isPrivate
         }),
       });
 
