@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Send,
   FileText,
@@ -23,18 +23,26 @@ export default function FormPage() {
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const target = e.target;
-
-    if (target instanceof HTMLInputElement && target.type === "checkbox") {
-      setFormData({ ...formData, [target.name]: target.checked });
-    } else {
-      setFormData({ ...formData, [target.name]: target.value });
+  // Clean up any pending timeouts when the component unmounts
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (status === "success" || status === "error") {
+      timeout = setTimeout(() => setStatus("idle"), 3500);
     }
-  };
+    return () => clearTimeout(timeout);
+  }, [status]);
 
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, type, checked, value } = e.target as HTMLInputElement;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,34 +52,44 @@ export default function FormPage() {
     try {
       const page_id = nanoid();
 
-      const theme = formData.theme; // you can expand this to include more logic
-
       const response = await fetch("/api/page/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           page_id,
-          content: "<h1> Your First Page </h1>",
-          theme: theme,
-          private: formData.isPrivate
+          content: "<h1>Your First Page</h1>",
+          theme: formData.theme,
+          private: formData.isPrivate,
         }),
       });
 
+      // Handle non-OK responses
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Something went wrong");
+        let message = "Something went wrong.";
+        try {
+          const data = await response.json();
+          message = data.error || message;
+        } catch {
+          /* ignore invalid JSON */
+        }
+        throw new Error(message);
       }
 
+      // ✅ Success flow
       setStatus("success");
       setFormData({
         theme: "raw_html",
         isPrivate: false,
       });
-    } catch (err: any) {
+    } catch (error) {
+      console.error("Page creation failed:", error);
+
       setStatus("error");
-      setErrorMessage(err.message);
-    } finally {
-      setTimeout(() => setStatus("idle"), 3500);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred. Please try again."
+      );
     }
   };
 
@@ -89,7 +107,6 @@ export default function FormPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 text-black">
-        
           {/* Theme Select */}
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
@@ -129,7 +146,7 @@ export default function FormPage() {
             </label>
           </div>
 
-          {/* Submit button */}
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={status === "loading"}
@@ -140,7 +157,7 @@ export default function FormPage() {
             }`}
           >
             {status === "loading" ? (
-              <span className="animate-pulse">Sending...</span>
+              <span className="animate-pulse">Creating...</span>
             ) : (
               <>
                 <Send className="w-4 h-4" />
@@ -150,15 +167,15 @@ export default function FormPage() {
           </button>
         </form>
 
-        {/* Feedback */}
+        {/* Feedback Messages */}
         {status === "success" && (
-          <div className="flex items-center gap-2 mt-4 text-green-600 text-sm font-medium">
+          <div className="flex items-center gap-2 mt-4 text-green-600 text-sm font-medium animate-fade-in">
             <CheckCircle2 className="w-4 h-4" />
             Page created successfully!
           </div>
         )}
         {status === "error" && (
-          <div className="flex items-center gap-2 mt-4 text-red-600 text-sm font-medium">
+          <div className="flex items-center gap-2 mt-4 text-red-600 text-sm font-medium animate-fade-in">
             <AlertCircle className="w-4 h-4" />
             {errorMessage || "Something went wrong."}
           </div>

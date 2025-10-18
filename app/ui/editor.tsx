@@ -96,19 +96,22 @@ export default function Editor({
   useEffect(() => {
     if (!mounted) return;
 
+    const maxChars = MAX_CHARACTERS; // capture stable value
+
     const cached = loadFromCache(page_id);
-    // ✅ convert Date → string
     if (isCacheNewer(cached, server_updated_at)) {
-      codeRef.current = cached!.content.slice(0, MAX_CHARACTERS);
+      codeRef.current = cached!.content.slice(0, maxChars);
     } else {
-      codeRef.current = page_value.slice(0, MAX_CHARACTERS);
+      codeRef.current = page_value.slice(0, maxChars);
       saveToCache(page_id, codeRef.current, true);
     }
 
     setCharCount(codeRef.current.length);
     setHasContent(codeRef.current.trim().length > 0);
     setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted, page_value, page_id, server_updated_at]);
+
 
   // 🔄 Update iframe preview
   const updatePreview = () => {
