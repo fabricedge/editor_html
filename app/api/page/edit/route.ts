@@ -2,20 +2,16 @@ import { NextResponse } from "next/server";
 import { db } from '../../../lib/db';
 import { pagesTable} from '../../../lib/schema';
 import { eq } from 'drizzle-orm';
-import { MAX_CHARACTERS } from "../../../lib/constants";
+import { PageEditSchema } from "../../../lib/validators";
+import { ZodError } from "zod";
 
                                                                                                                                                                         
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { page_id, content } = body;
+    //validator
+    const { page_id, content } = PageEditSchema.parse(body);
 
-    if (!page_id || !content) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-    }
-    if (content.length > MAX_CHARACTERS) {
-      return NextResponse.json({ error: "Content exceeds maximum length" }, { status: 413 });
-    }
     const pages = await db.select().from(pagesTable).where(eq(pagesTable.nanoid, page_id));
 
     if (!pages.length) {
@@ -47,6 +43,9 @@ export async function POST(request: Request) {
     
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: error.issues }, { status: 400 });
+    }
     console.error(error);
     return NextResponse.json({ error: "Failed to save" }, { status: 500 });
   }
