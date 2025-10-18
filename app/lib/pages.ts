@@ -38,6 +38,6 @@ export function parseHtmlDataValue(htmlData: string | null): string {
     return data.components?.raw_html?.value ?? "";
   } catch (error) {
     console.error("Failed to parse htmlData:", error);
-    return htmlData; // return original data if parsing fails
+    return ""; // return original data if parsing fails
   }
 }
