@@ -29,6 +29,7 @@ export async function test() {
 
   //await db.delete(pagesTable).where(eq(pagesTable.nanoid, page.nanoid));
   console.log('Test completed!')
+  return generatedNanoId;
 }
 
 
