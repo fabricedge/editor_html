@@ -24,13 +24,7 @@ export default async function Page({
 
   return (
     <div className="pt-5">
-      <style>{`
-        @layer base {
-          html, body {
-            overflow: hidden;
-          }
-        }
-      `}</style>
+
       <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
     </div>
   );

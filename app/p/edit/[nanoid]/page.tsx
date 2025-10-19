@@ -22,13 +22,7 @@ export default async function Page({
 
     return (
       <div className="text-black">
-        <style>{`
-          @layer base {
-            html, body {
-              overflow: hidden;
-            }
-          }
-        `}</style>
+
         <Header  user={{ name: "Knee" }} />
            <Editor // getHtmlDataValue parses a string 
           page_value={parseHtmlDataValue(page.htmlData)} page_id={nanoid} server_updated_at={page.updatedAt.toISOString()} max_characters={max_characters} />

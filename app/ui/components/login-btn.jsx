@@ -1,19 +1,18 @@
-import { useSession, signIn, signOut } from "next-auth/react"
+'use client'
+import { useSession } from "next-auth/react"
 
-export default function Component() {
-  const { data: session } = useSession()
-  if (session) {
+const UseSession = ({ children }) => {
+  const session = useSession()
+  return children(session)
+}
+
+// Usage
+export class ClassComponent extends React.Component {
+  render() {
     return (
-      <>
-        Signed in as {session.user.email} <br />
-        <button onClick={() => signOut()}>Sign out</button>
-      </>
+      <UseSession>
+        {(session) => <pre>{JSON.stringify(session, null, 2)}</pre>}
+      </UseSession>
     )
   }
-  return (
-    <>
-      Not signed in <br />
-      <button onClick={() => signIn()}>Sign in</button>
-    </>
-  )
 }

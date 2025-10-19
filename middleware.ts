@@ -1,6 +1,7 @@
 // app/middleware.ts
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+// import { handlers } from "./auth" 
 
 export function middleware(req: NextRequest) {
   const basicAuth = req.headers.get('authorization')
