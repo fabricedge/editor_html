@@ -1,3 +1,4 @@
+import Header from '../app/ui/header';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -25,10 +26,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-gray-50 via-white to-pink-50`}
       >
          
-        {children}
+        <Header user={{ name: "Knee" }} />
+        <main className="text-gray-900 min-h-screen overflow-hidden relative">
+          {children}
+        </main>
       </body>
     </html>
   );

@@ -12,7 +12,7 @@ export default function LikeButton({ likes }: { likes: number }) {
           // Simulate liking the post
           setLikes(currentLikes + 1);
         }}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
       >
         Like ({currentLikes})
       </button>

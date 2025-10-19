@@ -135,20 +135,20 @@ export default function Editor({
     {/* Loading overlay */}
     {loading && (
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-50 backdrop-blur-sm">
-        <div className="w-12 h-12 border-[3px] border-orange-300 border-t-orange-500 rounded-full animate-spin mb-4 shadow-inner" />
+        <div className="w-12 h-12 border-[3px] border-pink-300 border-t-pink-500 rounded-full animate-spin mb-4 shadow-inner" />
         <p className="text-gray-600 text-sm font-medium">Loading editor...</p>
       </div>
     )}
 
     {/* Tabs (mobile only) */}
     {!isDesktop && (
-      <div className="flex border-b border-orange-200/80 bg-gradient-to-b from-orange-50 to-white sticky top-0 z-20 shadow-sm">
+      <div className="flex border-b border-pink-200/80 bg-gradient-to-b from-pink-50 to-white sticky top-0 z-20 shadow-sm">
         <button
           onClick={() => setActiveTab("editor")}
           className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all duration-200 ${
             activeTab === "editor"
-              ? "text-orange-600 border-b-[3px] border-orange-600 bg-orange-50/60"
-              : "text-gray-600 hover:text-orange-600 hover:bg-orange-50/40"
+              ? "text-pink-600 border-b-[3px] border-pink-600 bg-pink-50/60"
+              : "text-gray-600 hover:text-pink-600 hover:bg-pink-50/40"
           }`}
         >
           <Code2 className="w-4 h-4" />
@@ -161,8 +161,8 @@ export default function Editor({
           }}
           className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all duration-200 ${
             activeTab === "preview"
-              ? "text-orange-600 border-b-[3px] border-orange-600 bg-orange-50/60"
-              : "text-gray-600 hover:text-orange-600 hover:bg-orange-50/40"
+              ? "text-pink-600 border-b-[3px] border-pink-600 bg-pink-50/60"
+              : "text-gray-600 hover:text-pink-600 hover:bg-pink-50/40"
           }`}
         >
           <Eye className="w-4 h-4" />
@@ -172,19 +172,19 @@ export default function Editor({
     )}
 
     {/* Main layout */}
-    <div className="flex-1 flex overflow-hidden mt-4 rounded-2xl border-2 border-orange-200 bg-gradient-to-b from-white to-orange-50/[0.04] shadow-[0_8px_30px_-6px_rgba(249,115,22,0.25)] relative">
+    <div className="flex-1 flex overflow-hidden mt-4 rounded-2xl border-2 border-pink-200 bg-gradient-to-b from-white to-pink-50/[0.04] shadow-[0_8px_30px_-6px_rgba(236,72,153,0.25)] relative">
       {/* Decorative glowing border layer */}
-      <div className="absolute inset-0 rounded-2xl pointer-events-none border border-orange-400/30 [mask-image:linear-gradient(white,transparent_70%)]"></div>
+      <div className="absolute inset-0 rounded-2xl pointer-events-none border border-pink-400/30 [mask-image:linear-gradient(white,transparent_70%)]"></div>
 
       {/* Editor */}
       {(isDesktop || activeTab === "editor") && (
         <div
           className={`flex flex-col flex-1 ${
             isDesktop ? "w-1/2 border-r-2" : ""
-          } border-orange-100/90 bg-gradient-to-b from-white to-orange-50/[0.07]`}
+          } border-pink-100/90 bg-gradient-to-b from-white to-pink-50/[0.07]`}
         >
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-orange-50/50 border-b border-orange-100/80">
-            <Code2 className="w-4 h-4 text-orange-500" />
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-pink-50/50 border-b border-pink-100/80">
+            <Code2 className="w-4 h-4 text-pink-500" />
             <span className="text-sm font-medium text-gray-700">index.html</span>
             <div className="ml-auto text-xs text-gray-500">
               <span
@@ -224,10 +224,10 @@ export default function Editor({
         <div
           className={`flex flex-col flex-1 ${
             isDesktop ? "w-1/2" : ""
-          } bg-gradient-to-b from-orange-50/[0.05] to-white`}
+          } bg-gradient-to-b from-pink-50/[0.05] to-white`}
         >
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-orange-50/50 border-b border-orange-100/80">
-            <Eye className="w-4 h-4 text-orange-500" />
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-pink-50/50 border-b border-pink-100/80">
+            <Eye className="w-4 h-4 text-pink-500" />
             <span className="text-sm font-medium text-gray-700">Preview</span>
           </div>
 

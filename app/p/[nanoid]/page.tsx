@@ -3,7 +3,7 @@
 //import LikeButton from '../../ui/like-button'
 import { parseHtmlDataValue, getPage } from '../../lib/pages';
 //import Editor from '../../ui/editor'
-import { redirect } from "next/navigation";
+
 
 //todo: Have a visualizer for the html
 export default async function Page({

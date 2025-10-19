@@ -20,7 +20,7 @@ export async function getPage(nanoid: string) {
 
   return page;
 }
-export async function createPage(nanoid: string) {
+export async function createPage() {
   
 
   return 1;
