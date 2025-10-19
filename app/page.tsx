@@ -15,7 +15,7 @@ const HomePage = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-pink-50/50 to-orange-50/50"></div>
 
         <div className="container mx-auto px-6 text-center relative z-10">
-          <div className="max-w-4xl mx-auto animate-fade-in-up">
+          <div className="max-w-4xl mx-auto animate-fade-in-up drop-shadow-md">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight text-gray-900">
               Create your
               <span className="text-gradient-home block">Personal Page</span>
