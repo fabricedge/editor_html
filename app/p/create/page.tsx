@@ -1,5 +1,5 @@
 
-import FormPage from "../../ui/create"
+import FormPage from "../../components/create"
 
 const CreatePage: React.FC = () => {
     return (

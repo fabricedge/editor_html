@@ -1,5 +1,5 @@
 "use server";
-import Editor from '../../../ui/editor'
+import Editor from '../../../components/editor'
 import { redirect } from "next/navigation";
 
 import { neon } from '@neondatabase/serverless';
