@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { LoginButton } from "./auth/login-btn";
 export default function Header({ user }: { user?: { name: string } }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const toggleMobileMenu = () => setMobileOpen(!mobileOpen);
@@ -38,13 +39,18 @@ export default function Header({ user }: { user?: { name: string } }) {
                   exit
                 </Link>
               ) : (
-                <Link
-                  href="/login"
-                  className="px-4 py-2 bg-blue-600 text-gray-100 rounded-lg hover:bg-blue-700 text-xl transition-colors"
-                >
-                  sign in
-                </Link>
+                 <LoginButton>
+                    <Link
+                      href="/login"
+                      className="px-4 py-2 bg-blue-600 text-gray-100 rounded-lg hover:bg-blue-700 text-xl transition-colors"
+                    >
+                      sign in
+                  
+                    </Link>
+                  </LoginButton>
+                  
               )}
+              
             </div>
 
             {/* Mobile Menu Button */}
@@ -103,12 +109,15 @@ export default function Header({ user }: { user?: { name: string } }) {
                   exit
                 </Link>
               ) : (
-                <Link
-                  href="/login"
-                  className="block px-4 py-2 bg-blue-600 text-gray-100 rounded-lg hover:bg-blue-700 font-medium text-center"
-                >
-                  sign in
-                </Link>
+                  <LoginButton>
+                    <Link
+                      href="/login"
+                      className="px-4 py-2 bg-blue-600 text-gray-100 rounded-lg hover:bg-blue-700 text-xl transition-colors"
+                    >
+                      sign in
+                  
+                    </Link>
+                  </LoginButton>
               )}
             </div>
           </div>
