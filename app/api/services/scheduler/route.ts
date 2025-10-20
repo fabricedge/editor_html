@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 // var cron = require('node-cron');
 import cron from 'node-cron';
-export async function POST(req: string, res: string) {
+export async function POST() {
 
     try {
 
