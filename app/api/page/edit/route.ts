@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { db } from '../../../lib/db';
-import { pagesTable} from '../../../lib/schema';
+import { db } from '../../../../lib/db';
+import { pagesTable} from '../../../../lib/schema';
 import { eq } from 'drizzle-orm';
-import { PageEditSchema } from "../../../lib/validators";
+import { PageEditSchema } from "../../../../lib/validators";
 import { ZodError } from "zod";
 
                                                                                                                                                                         

@@ -31,6 +31,12 @@ export default function Header({ user }: { user?: { name: string } }) {
               >
                 pages
               </Link>
+              <Link
+                href="/pannel"
+                className="text-gray-700 hover:text-blue-600 text-xl transition-colors"
+              >
+                pannel
+              </Link>
               {user ? (
                 <Link
                   href="/users/log_out"
@@ -100,6 +106,12 @@ export default function Header({ user }: { user?: { name: string } }) {
                 className="block text-gray-700 hover:text-blue-600 font-medium"
               >
                 pages
+              </Link>
+              <Link
+                href="/pannel"
+                className="text-gray-700 hover:text-blue-600 text-xl transition-colors"
+              >
+                pannel
               </Link>
               {user ? (
                 <Link

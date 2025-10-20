@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { test } from '../../../lib/testdb';
-import { TestResponse } from "../../../lib/types";
+import { test } from '../../../../lib/testdb';
+import { TestResponse } from "../../../../lib/types";
 
 export async function POST() {
   try {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { db } from "../../../lib/db";
-import { pagesTable } from "../../../lib/schema";
-import { PageCreateSchema } from "../../../lib/validators";
+import { db } from "../../../../lib/db";
+import { pagesTable } from "../../../../lib/schema";
+import { PageCreateSchema } from "../../../../lib/validators";
 import { ZodError } from "zod";
 
 // ✅ POST /api/page/create
