@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { LoginButton } from './components/auth/login-btn';
-import SignIn from './components/sign-in';
+import SignIn from './components/auth/signin-button';
 
 
 const HomePage = () => {
