@@ -1,7 +1,6 @@
 
 
 import Link from 'next/link';
-import SignIn from './components/auth/signin-button';
 
 
 const HomePage = () => {
@@ -33,9 +32,7 @@ const HomePage = () => {
                 >
                   Get Started
                 </Link>     
-              <SignIn  > 
-                        
-              </SignIn>
+  
             
               
             </div>
