@@ -1,6 +1,6 @@
 // app/middleware.ts
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+// import { NextResponse } from 'next/server'
+// import type { NextRequest } from 'next/server'
 // import { handlers } from "./auth" 
 export { auth as middleware } from "./auth"
 // export function middleware(req: NextRequest) {

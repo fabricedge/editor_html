@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { LoginButton } from "./auth/login-btn";
 export default function Header({ user }: { user?: { name: string } }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const toggleMobileMenu = () => setMobileOpen(!mobileOpen);
@@ -45,7 +44,6 @@ export default function Header({ user }: { user?: { name: string } }) {
                   exit
                 </Link>
               ) : (
-                 <LoginButton>
                     <Link
                       href="/login"
                       className="px-4 py-2 bg-blue-600 text-gray-100 rounded-lg hover:bg-blue-700 text-xl transition-colors"
@@ -53,7 +51,6 @@ export default function Header({ user }: { user?: { name: string } }) {
                       sign in
                   
                     </Link>
-                  </LoginButton>
                   
               )}
               
@@ -121,7 +118,6 @@ export default function Header({ user }: { user?: { name: string } }) {
                   exit
                 </Link>
               ) : (
-                  <LoginButton>
                     <Link
                       href="/login"
                       className="px-4 py-2 bg-blue-600 text-gray-100 rounded-lg hover:bg-blue-700 text-xl transition-colors"
@@ -129,7 +125,6 @@ export default function Header({ user }: { user?: { name: string } }) {
                       sign in
                   
                     </Link>
-                  </LoginButton>
               )}
             </div>
           </div>
