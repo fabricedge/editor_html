@@ -1,26 +1,12 @@
-// app/middleware.ts
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-// import { handlers } from "./auth" 
-// export { auth as middleware } from "./auth"
-export function middleware(req: NextRequest) {
-  const basicAuth = req.headers.get('authorization')
+import { clerkMiddleware } from '@clerk/nextjs/server'
 
-  if (basicAuth) {
-    const authValue = basicAuth.split(' ')[1]
-    const [user, pwd] = atob(authValue).split(':')
-
-    if (user === process.env.BASIC_USER && pwd === process.env.BASIC_PASS) {
-      return NextResponse.next()
-    }
-  }
-
-  return new NextResponse('Auth required', {
-    status: 401,
-    headers: { 'WWW-Authenticate': 'Basic realm="Secure Area"' },
-  })
-}
+export default clerkMiddleware()
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
 }
