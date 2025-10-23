@@ -15,6 +15,8 @@ export default function Header({ user }: { user?: { name: string } }) {
   const toggleMobileMenu = () => setMobileOpen(!mobileOpen);
 
   return (
+
+    <ClerkProvider>
     <header className="flex items-center justify-between h-16 pb-1">
       {/* Center link container */}
       <div className="pl-[2rem] flex-1 flex justify-center">
@@ -41,6 +43,8 @@ export default function Header({ user }: { user?: { name: string } }) {
         </SignedIn>
       </div>
     </header>
+
+    </ClerkProvider>
 
   );
 }
