@@ -3,13 +3,18 @@ import { db } from "../../../lib/db";
 import { pagesTable } from "../../../lib/schema";
 import { PageCreateSchema } from "../../../lib/validators";
 import { ZodError } from "zod";
-
+// import { useRouter } from "next/navigation";
 // ✅ POST /api/page/create
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     //validate content
-    const { page_id, content, theme, private: isPrivate } = PageCreateSchema.parse(body);
+    const {
+      page_id,
+      content,
+      theme,
+      private: isPrivate,
+    } = PageCreateSchema.parse(body);
 
     // ✅ Prepare JSON payload for database
     const newHtmlData = JSON.stringify({
@@ -53,8 +58,11 @@ export async function POST(request: Request) {
         { status: 409 }
       );
     }
-    
+
     console.error("❌ General error in POST /api/page/create:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

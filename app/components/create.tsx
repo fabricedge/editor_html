@@ -11,12 +11,14 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { nanoid } from "nanoid";
+import { useRouter } from "next/navigation";
 
 export default function FormPage() {
   const [formData, setFormData] = useState({
     theme: "raw_html",
     isPrivate: false,
   });
+  const router = useRouter();
 
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
@@ -57,7 +59,8 @@ export default function FormPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           page_id,
-          content: "<h1>Your First Page</h1>",
+          //todo: check content size. limit to 10k characters
+          content: "<h1>Your First Page. You can modify this!</h1>",
           theme: formData.theme,
           private: formData.isPrivate,
         }),
@@ -78,9 +81,10 @@ export default function FormPage() {
       // ✅ Success flow
       setStatus("success");
       setFormData({
-        theme: "raw_html",
-        isPrivate: false,
+        theme: formData.theme,
+        isPrivate: formData.isPrivate,
       });
+      router.push(`/p/edit/${page_id}`);
     } catch (error) {
       console.error("Page creation failed:", error);
 
