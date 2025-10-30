@@ -49,7 +49,6 @@ export default function FormPage() {
     setStatus("loading");
     setErrorMessage("");
 
-
     try {
       const page_id = nanoid();
 
@@ -107,7 +106,10 @@ export default function FormPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5 text-black">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-5 text-black"
+        >
           {/* Theme Select */}
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
@@ -172,7 +174,7 @@ export default function FormPage() {
         {status === "success" && (
           <div className="flex items-center gap-2 mt-4 text-green-600 text-sm font-medium animate-fade-in">
             <CheckCircle2 className="w-4 h-4" />
-            Page created successfully!
+            Page created successfully! Redirecting you to edit Page!
           </div>
         )}
         {status === "error" && (

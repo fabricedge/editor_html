@@ -16,22 +16,26 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "plugins": [
       {
         "name": "next"
       }
     ]
   },
-   "paths": {
-      "@/*": ["./*"]
-    },
+  "paths": {
+    "@/*": [
+      "./*"
+    ]
+  },
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "app/Header.jsx"  ],
+    "**/*.tsx",
+    "app/Header.jsx",
+    ".next/dev/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules"
   ]
