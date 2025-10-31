@@ -78,12 +78,6 @@ export default function FormPage() {
         throw new Error(message);
       }
 
-      // ✅ Success flow
-      setStatus("success");
-      setFormData({
-        theme: formData.theme,
-        isPrivate: formData.isPrivate,
-      });
       router.push(`/p/edit/${page_id}`);
     } catch (error) {
       console.error("Page creation failed:", error);

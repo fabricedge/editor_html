@@ -3,6 +3,7 @@ import { db } from "../../../lib/db";
 import { pagesTable } from "../../../lib/schema";
 import { PageCreateSchema } from "../../../lib/validators";
 import { ZodError } from "zod";
+
 // import { useRouter } from "next/navigation";
 // ✅ POST /api/page/create
 export async function POST(request: Request) {
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
       },
       name: "name",
       shorten_url: "shorten_url",
+      expirationDate: "notset",
     });
 
     const creationDate = new Date();

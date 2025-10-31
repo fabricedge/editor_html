@@ -1,6 +1,5 @@
-
-import { z } from 'zod';
-import { MAX_CHARACTERS } from './constants';
+import { z } from "zod";
+import { MAX_CHARACTERS } from "./constants";
 
 export const PageCreateSchema = z.object({
   page_id: z.string().min(1),
