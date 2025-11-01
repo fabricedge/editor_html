@@ -6,7 +6,7 @@ export const pagesTable = pgTable("pages", {
   nanoid: text("nanoid").notNull().unique(), // ✅ this is a normal column
   htmlData: text("html_data"),
   theme: text("theme"),
-  owner: uuid("owner"),
+  owner: text("owner"),
   private: boolean("private"),
   insertedAt: timestamp("inserted_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

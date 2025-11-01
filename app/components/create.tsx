@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/clerk-react";
 
 export default function FormPage() {
   const [formData, setFormData] = useState({
@@ -24,6 +25,8 @@ export default function FormPage() {
     "idle" | "loading" | "success" | "error"
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const { isSignedIn, user, isLoaded } = useUser();
 
   // Clean up any pending timeouts when the component unmounts
   useEffect(() => {
@@ -63,6 +66,7 @@ export default function FormPage() {
           content: "<h1>Your First Page. You can modify this!</h1>",
           theme: formData.theme,
           private: formData.isPrivate,
+          // user_id: isSignedIn && user ? user.id : null,
         }),
       });
 
@@ -77,7 +81,7 @@ export default function FormPage() {
         }
         throw new Error(message);
       }
-
+      // todo: pass if the user logged in or not
       router.push(`/p/edit/${page_id}`);
     } catch (error) {
       console.error("Page creation failed:", error);
@@ -102,8 +106,13 @@ export default function FormPage() {
           <p className="text-sm text-gray-500 mt-1">
             Fill out the form to create your page.
           </p>
+          {isSignedIn  && (
+            <p className="text-xs text-gray-400 mt-1">
+              Already Logged
+            </p>
+          )}
         </div>
-
+        
         <form
           onSubmit={handleSubmit}
           className="flex flex-col gap-5 text-black"

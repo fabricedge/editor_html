@@ -3,10 +3,12 @@ import { db } from "../../../lib/db";
 import { pagesTable } from "../../../lib/schema";
 import { PageCreateSchema } from "../../../lib/validators";
 import { ZodError } from "zod";
-
+import { currentUser } from '@clerk/nextjs/server'
 // import { useRouter } from "next/navigation";
 // ✅ POST /api/page/create
 export async function POST(request: Request) {
+  const user = await currentUser()
+  //console.log(user, "USUARIO")
   try {
     const body = await request.json();
     //validate content
@@ -17,6 +19,18 @@ export async function POST(request: Request) {
       private: isPrivate,
     } = PageCreateSchema.parse(body);
 
+    const creationDate = new Date();
+    
+    const expirationDate = new Date(creationDate.getTime() + (1000 * 60 * 60 * 24 * 7)); // 7 days from creation
+
+    function expirationDatefunc()  {
+      if (user?.id) {
+        // if user is logged in, set expiration to 30 days
+        return "not expired";
+      }
+      return expirationDate;
+    }
+
     // ✅ Prepare JSON payload for database
     const newHtmlData = JSON.stringify({
       components: {
@@ -26,10 +40,14 @@ export async function POST(request: Request) {
       },
       name: "name",
       shorten_url: "shorten_url",
-      expirationDate: "notset",
+      expirationDate: expirationDatefunc()
     });
 
-    const creationDate = new Date();
+    const owner = JSON.stringify({ 
+      id: user?.id || "anonymous",
+      email: user?.primaryEmailAddress?.emailAddress || "anonymous",
+      
+    })
 
     // 💾 Database insert
     await db.insert(pagesTable).values({
@@ -39,6 +57,7 @@ export async function POST(request: Request) {
       private: !!isPrivate,
       insertedAt: creationDate,
       updatedAt: creationDate,
+      owner: owner,
     });
 
     console.log("✅ Inserted page:", {
