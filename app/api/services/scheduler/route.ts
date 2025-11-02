@@ -4,7 +4,6 @@ import { db } from "../../../lib/db";
 
 import { pagesTable } from "../../../lib/schema";
 // var cron = require('node-cron');
-import cron from 'node-cron';
 export async function GET() {
 
     try {
