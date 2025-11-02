@@ -5,6 +5,7 @@ import { Code2, Eye } from "lucide-react";
 import { loadFromCache, saveToCache, isCacheNewer } from "../utils/cache/cacheManager";
 import EditorM from "@monaco-editor/react";
 
+import { useUser } from "@clerk/clerk-react";
 import { MAX_CHARACTERS } from "../lib/constants";
 interface EditorProps {
   page_value: string;
