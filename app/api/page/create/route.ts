@@ -3,7 +3,7 @@ import { db } from "../../../lib/db";
 import { pagesTable } from "../../../lib/schema";
 import { PageCreateSchema } from "../../../lib/validators";
 import { ZodError } from "zod";
-import { stackServerApp } from "@/../stack/server";
+import { stackServerApp } from "../../../../stack/server";
 
 // import { useRouter } from "next/navigation";
 // ✅ POST /api/page/create
