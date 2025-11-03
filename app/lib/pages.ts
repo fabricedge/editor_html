@@ -41,3 +41,17 @@ export function parseHtmlDataValue(htmlData: string | null): string {
     return ""; // return original data if parsing fails
   }
 }
+
+export function parseHtmlDataExpirationDate(htmlData: string | null): string {
+  if (!htmlData) {
+    return "";
+  }
+
+  try {
+    const data = JSON.parse(htmlData);
+    return data.expirationDate ?? "test";
+  } catch (error) {
+    console.error("Failed to parse htmlData:", error);
+    return ""; // return original data if parsing fails
+  }
+}

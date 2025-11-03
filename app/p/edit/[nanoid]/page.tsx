@@ -3,7 +3,7 @@ import Editor from '../../../components/editor'
 import { redirect } from "next/navigation";
 
 import { neon } from '@neondatabase/serverless';
-import { parseHtmlDataValue, getPage } from '../../../lib/pages';
+import { parseHtmlDataValue,parseHtmlDataExpirationDate, getPage } from '../../../lib/pages';
 
 import { MAX_CHARACTERS } from "../../../lib/constants";
 
@@ -22,7 +22,7 @@ export default async function Page({
 
     return (
            <Editor // getHtmlDataValue parses a string 
-          page_value={parseHtmlDataValue(page.htmlData)} page_id={nanoid} server_updated_at={page.updatedAt.toISOString()} max_characters={max_characters} />
+          page_value={parseHtmlDataValue(page.htmlData)} page_id={nanoid} expiration={parseHtmlDataExpirationDate(page.htmlData)} server_updated_at={page.updatedAt.toISOString()} max_characters={max_characters} />
     );
   } catch (err) {
     console.error(err);

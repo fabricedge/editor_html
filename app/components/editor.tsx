@@ -11,6 +11,7 @@ interface EditorProps {
   page_id?: string;
   server_updated_at?: string;
   max_characters?: number;
+  expiration?: string;
 }
 
 export default function Editor({
@@ -18,6 +19,7 @@ export default function Editor({
   page_id = "default",
   server_updated_at,
   max_characters = MAX_CHARACTERS,
+  expiration
 }: EditorProps) {
   const MAX_CHARACTERS = max_characters;
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -170,6 +172,8 @@ export default function Editor({
         </button>
       </div>
     )}
+
+        <div className="text-black bg-amber-300 my-1"> Page Expiration: {expiration}</div>
 
     {/* Main layout */}
     <div className="flex-1 flex overflow-hidden mt-4 rounded-2xl border-2 border-pink-200 bg-gradient-to-b from-gray-100 to-pink-50/[0.04] shadow-[0_8px_30px_-6px_rgba(236,72,153,0.25)] relative">
