@@ -3,12 +3,13 @@ import { db } from "../../../lib/db";
 import { pagesTable } from "../../../lib/schema";
 import { PageCreateSchema } from "../../../lib/validators";
 import { ZodError } from "zod";
-import { currentUser } from '@clerk/nextjs/server'
+import { stackServerApp } from "../../../../stack/server";
+
 // import { useRouter } from "next/navigation";
 // ✅ POST /api/page/create
 export async function POST(request: Request) {
-  const user = await currentUser()
-  //console.log(user, "USUARIO")
+  const user = await stackServerApp.getUser();  // or: stackServerApp.getUser({ or: "redirect" })
+  
   try {
     const body = await request.json();
     //validate content
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
 
     const owner = JSON.stringify({ 
       id: user?.id || "anonymous",
-      email: user?.primaryEmailAddress?.emailAddress || "anonymous",
+      email: user?.id || "anonymous",
       
     })
 

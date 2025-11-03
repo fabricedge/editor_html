@@ -9,7 +9,7 @@ import { db } from './db';
 
 // Retrieves a page based on a nanoid
 export async function getPage(nanoid: string) {
-  const page = await db.query.pagesTable.findFirst({
+  const page = db.query.pagesTable.findFirst({
     where: eq(pagesTable.nanoid, nanoid),
   });
 

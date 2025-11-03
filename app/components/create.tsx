@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@stackframe/stack"
 
 export default function FormPage() {
   const [formData, setFormData] = useState({
@@ -21,12 +21,13 @@ export default function FormPage() {
   });
   const router = useRouter();
 
+  const user = useUser();
+
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { isSignedIn, user, isLoaded } = useUser();
 
   // Clean up any pending timeouts when the component unmounts
   useEffect(() => {
@@ -65,8 +66,7 @@ export default function FormPage() {
           //todo: check content size. limit to 10k characters
           content: "<h1>Your First Page. You can modify this!</h1>",
           theme: formData.theme,
-          private: formData.isPrivate,
-          // user_id: isSignedIn && user ? user.id : null,
+          private: formData.isPrivate
         }),
       });
 
@@ -107,11 +107,12 @@ export default function FormPage() {
           <p className="text-sm text-gray-500 mt-1">
             Fill out the form to create your page.
           </p>
-          {isSignedIn  && (
-            <p className="text-xs text-gray-400 mt-1">
-              Already Logged
-            </p>
-          )}
+          <div className={user ? "text-gray-500 mt-1 text-sm": "text-black bg-red-400"}>
+            {user
+              ? `You are Logged In!`
+              : "Not logged in! Page expiration will be set to 7 days."}
+          </div>
+
         </div>
         
         <form
