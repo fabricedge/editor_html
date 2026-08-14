@@ -3,16 +3,17 @@ import { db } from "../../../lib/db";
 import { pagesTable } from "../../../lib/schema";
 import { PageCreateSchema } from "../../../lib/validators";
 import { ZodError } from "zod";
-import { stackServerApp } from "../../../../stack/server";
+import { auth } from "@/auth";
 
-// import { useRouter } from "next/navigation";
-// ✅ POST /api/page/create
+const WEEK_MS = 1000 * 60 * 60 * 24 * 7;
+const MONTH_MS = WEEK_MS * 4;
+
 export async function POST(request: Request) {
-  const user = await stackServerApp.getUser();  // or: stackServerApp.getUser({ or: "redirect" })
-  
+  const session = await auth();
+  const user = session?.user ?? null;
+
   try {
     const body = await request.json();
-    //validate content
     const {
       page_id,
       content,
@@ -21,36 +22,18 @@ export async function POST(request: Request) {
     } = PageCreateSchema.parse(body);
 
     const creationDate = new Date();
-    
-    const expirationDate = new Date(creationDate.getTime() + (1000 * 60 * 60 * 24 * 7)); // 7 days from creation
+    const ttl = user?.id ? MONTH_MS : WEEK_MS;
+    const expiresAt = new Date(creationDate.getTime() + ttl);
 
-    function expirationDatefunc()  {
-      if (user?.id) {
-        // if user is logged in, set expiration to 30 days
-        return "not expired";
-      }
-      return expirationDate;
-    }
-
-    // ✅ Prepare JSON payload for database
     const newHtmlData = JSON.stringify({
       components: {
         raw_html: {
           value: content,
         },
       },
-      name: "name",
-      shorten_url: "shorten_url",
-      expirationDate: expirationDatefunc()
+      expirationDate: expiresAt.toISOString(),
     });
 
-    const owner = JSON.stringify({ 
-      id: user?.id || "anonymous",
-      email: user?.id || "anonymous",
-      
-    })
-
-    // 💾 Database insert
     await db.insert(pagesTable).values({
       nanoid: page_id,
       htmlData: newHtmlData,
@@ -58,14 +41,8 @@ export async function POST(request: Request) {
       private: !!isPrivate,
       insertedAt: creationDate,
       updatedAt: creationDate,
-      owner: owner,
-    });
-
-    console.log("✅ Inserted page:", {
-      page_id,
-      theme,
-      isPrivate,
-      preview: content.slice(0, 60) + "...",
+      expiresAt,
+      owner: user?.id ?? null,
     });
 
     return NextResponse.json({ success: true }, { status: 200 });
@@ -81,7 +58,7 @@ export async function POST(request: Request) {
       );
     }
 
-    console.error("❌ General error in POST /api/page/create:", error);
+    console.error("Error in POST /api/page/create:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

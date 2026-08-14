@@ -2,12 +2,13 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useUser } from "@stackframe/stack";
+import Image from "next/image";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const toggleMobileMenu = () => setMobileOpen((v) => !v);
-  const user = useUser();
+  const { data: session } = useSession();
   const menuRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -60,7 +61,7 @@ export default function Header() {
 
       {/* Right side: user / login */}
       <div className="ml-auto flex items-center gap-3 relative">
-        {user ? (
+        {session?.user ? (
           <>
             <button
               ref={buttonRef}
@@ -70,11 +71,20 @@ export default function Header() {
               aria-controls="mobile-menu"
               className="flex items-center gap-2 focus:outline-none"
             >
-              <img
-                src={user?.profileImageUrl || "/default-avatar.png"}
-                alt="Profile"
-                className="w-8 h-8 rounded-full border border-gray-300 shadow-sm object-cover hover:scale-105 transition-transform"
-              />
+              {session.user.image ? (
+                <Image
+                  src={session.user.image}
+                  alt="Profile"
+                  width={32}
+                  height={32}
+                  unoptimized
+                  className="w-8 h-8 rounded-full border border-gray-300 shadow-sm object-cover hover:scale-105 transition-transform"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-pink-200 flex items-center justify-center text-sm font-semibold text-pink-700">
+                  {session.user.name?.charAt(0)?.toUpperCase() || "U"}
+                </div>
+              )}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -100,43 +110,27 @@ export default function Header() {
               >
                 <ul className="py-1">
                   <li>
-                    <Link
-                      href="/profile"
-                      onClick={onNavigate}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/settings"
-                      onClick={onNavigate}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Settings
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/handler/sign-out"
-                      onClick={onNavigate}
-                      className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    <button
+                      onClick={() => {
+                        onNavigate();
+                        signOut({ callbackUrl: "/" });
+                      }}
+                      className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
                     >
                       Sign out
-                    </Link>
+                    </button>
                   </li>
                 </ul>
               </div>
             )}
           </>
         ) : (
-          <Link
-            href="/handler/sign-in"
+          <button
+            onClick={() => signIn("google")}
             className="text-gray-800 hover:text-blue-600 text-lg font-medium transition-colors"
           >
             login
-          </Link>
+          </button>
         )}
       </div>
     </header>

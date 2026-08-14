@@ -1,32 +1,29 @@
-// /lib/data.ts
+import { eq } from "drizzle-orm";
+import { pagesTable } from "./schema";
+import { db } from "./db";
 
-// import { createClient } from '../utils/supabase/server';
-
-import { eq } from 'drizzle-orm';
-import { pagesTable } from './schema';
-import { db } from './db';
-
-
-// Retrieves a page based on a nanoid
 export async function getPage(nanoid: string) {
-  const page = db.query.pagesTable.findFirst({
+  const page = await db.query.pagesTable.findFirst({
     where: eq(pagesTable.nanoid, nanoid),
   });
 
   if (!page) {
-    // Or handle as a not-found case
-    throw new Error('Page not found');
+    throw new Error("Page not found");
   }
 
   return page;
 }
-export async function createPage() {
-  
 
-  return 1;
+export function getPageOwnerId(page: typeof pagesTable.$inferSelect): string | null {
+  if (!page.owner) return null;
+
+  try {
+    const parsed = JSON.parse(page.owner);
+    return parsed?.id ?? null;
+  } catch {
+    return page.owner;
+  }
 }
-
-
 
 export function parseHtmlDataValue(htmlData: string | null): string {
   if (!htmlData) {
@@ -38,20 +35,6 @@ export function parseHtmlDataValue(htmlData: string | null): string {
     return data.components?.raw_html?.value ?? "";
   } catch (error) {
     console.error("Failed to parse htmlData:", error);
-    return ""; // return original data if parsing fails
-  }
-}
-
-export function parseHtmlDataExpirationDate(htmlData: string | null): string {
-  if (!htmlData) {
     return "";
-  }
-
-  try {
-    const data = JSON.parse(htmlData);
-    return data.expirationDate ?? "test";
-  } catch (error) {
-    console.error("Failed to parse htmlData:", error);
-    return ""; // return original data if parsing fails
   }
 }

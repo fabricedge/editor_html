@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Editor HTML
 
-## Getting Started
+Create and share personal HTML pages. Write raw HTML in a Monaco editor with a live preview, and share it with a unique link. Pages auto-expire after 7 days (30 days for logged-in users).
 
-First, run the development server:
+## Stack
+
+- **Framework:** Next.js 16 (App Router, Turbopack)
+- **Language:** TypeScript (strict)
+- **UI:** Tailwind CSS 4, lucide-react, Monaco editor
+- **Auth:** Google OAuth via Auth.js (NextAuth v5)
+- **Database:** PostgreSQL (Neon) via Drizzle ORM
+- **Security:** DOMPurify HTML sanitization
+- **Deploy:** Vercel (+ daily cron to purge expired pages)
+
+## Getting started
+
+Requires [bun](https://bun.sh) (or npm).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+cp env.example .env    # fill in DATABASE_URL and Google OAuth credentials
+bun run dev            # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Google OAuth setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Create an OAuth 2.0 Client ID (Web application) in the
+   [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+2. Add authorized redirect URIs:
+   - `http://localhost:3000/api/auth/callback/google`
+   - `https://<your-vercel-domain>/api/auth/callback/google`
+3. Set `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` in `.env`.
+4. Generate `AUTH_SECRET` with `openssl rand -base64 32`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+| Command          | Description                  |
+| ---------------- | ---------------------------- |
+| `bun run dev`    | Start dev server (Turbopack) |
+| `bun run build`  | Production build             |
+| `bun run start`  | Start production server      |
+| `bun run lint`   | Run ESLint                   |
+| `bun run db:generate` | Generate a Drizzle migration |
 
-To learn more about Next.js, take a look at the following resources:
+## Database
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The Drizzle schema lives in `app/lib/schema.ts`. To evolve it:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+bunx drizzle-kit generate   # create migration
+bunx drizzle-kit push       # apply to database
+```
 
-## Deploy on Vercel
+## Expired-page cleanup
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Expired pages are deleted by a Vercel cron hitting `/api/services/scheduler`
+(schedule: `15 06 * * *`). The endpoint requires the `CRON_SECRET` bearer
+token, so it can't be triggered by unauthenticated requests.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Structure
+
+```
+app/
+  api/auth/[...nextauth]/  Auth.js route handlers
+  api/page/create/      POST create a page
+  api/page/edit/        POST update page content (owner-checked)
+  api/services/scheduler/  cron cleanup of expired pages
+  components/editor.tsx     Monaco editor + preview (client)
+  lib/                  db, schema, validators, helpers
+  p/create/             create form
+  p/edit/[nanoid]/      editor for a page (owner-only)
+  p/[nanoid]/           public page (sanitized, private-aware)
+auth.ts                 Auth.js config (Google provider)
+proxy.ts                session-refresh middleware
+```
+
+## Privacy model
+
+- Pages created while logged in are linked to the owner; only the owner can
+  edit them.
+- Anonymous pages can be edited by anyone with the link.
+- Pages marked **private** are only visible to their owner.

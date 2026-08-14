@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
-import { useUser } from "@stackframe/stack"
+import { useSession } from "next-auth/react"
 
 export default function FormPage() {
   const [formData, setFormData] = useState({
@@ -21,7 +21,8 @@ export default function FormPage() {
   });
   const router = useRouter();
 
-  const user = useUser();
+  const { data: session } = useSession();
+  const user = session?.user ?? null;
 
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
