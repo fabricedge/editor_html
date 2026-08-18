@@ -30,7 +30,7 @@
 - `public/window.svg`
 
 ### Renomear:
-- `proxy.ts` → `middleware.ts`
+- `proxy.ts` → `middleware.ts` (manter como `proxy.ts` — Next.js 16 usa `proxy`)
 
 ### Corrigir `app/globals.css`:
 - Adicionar `.animate-fade-in`
@@ -91,7 +91,7 @@ hooks/
   use-debounce.ts
 types/
   next-auth.d.ts
-middleware.ts
+proxy.ts
 ```
 
 ---
