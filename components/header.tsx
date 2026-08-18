@@ -81,7 +81,7 @@ export default function Header() {
                   className="w-8 h-8 rounded-full border border-gray-300 shadow-sm object-cover hover:scale-105 transition-transform"
                 />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-pink-200 flex items-center justify-center text-sm font-semibold text-pink-700">
+                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700">
                   {session.user.name?.charAt(0)?.toUpperCase() || "U"}
                 </div>
               )}

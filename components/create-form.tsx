@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react"
+import { useSession } from "next-auth/react";
 
 export default function CreateForm() {
   const [formData, setFormData] = useState({
@@ -29,8 +29,6 @@ export default function CreateForm() {
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-
-  // Clean up any pending timeouts when the component unmounts
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     if (status === "success" || status === "error") {
@@ -64,14 +62,12 @@ export default function CreateForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           page_id,
-          //todo: check content size. limit to 10k characters
           content: "<h1>Your First Page. You can modify this!</h1>",
           theme: formData.theme,
-          private: formData.isPrivate
+          private: formData.isPrivate,
         }),
       });
 
-      // Handle non-OK responses
       if (!response.ok) {
         let message = "Something went wrong.";
         try {
@@ -82,8 +78,7 @@ export default function CreateForm() {
         }
         throw new Error(message);
       }
-      // todo: pass if the user logged in or not
-      
+
       router.push(`/p/edit/${page_id}`);
     } catch (error) {
       console.error("Page creation failed:", error);
@@ -98,45 +93,48 @@ export default function CreateForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-pink-50 to-gray-100 px-6 py-12 relative overflow-hidden">
-      <div className="absolute top-1/3 -left-20 w-72 h-72 bg-pink-200/40 rounded-full blur-3xl animate-pulse" />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-6 py-12 relative overflow-hidden">
+      <div className="absolute top-1/3 -left-20 w-72 h-72 bg-gray-200/40 rounded-full blur-3xl" />
 
-      <div className="relative w-full max-w-md bg-gray-100 backdrop-blur-lg border border-pink-100 shadow-[0_8px_40px_-8px_rgba(236,72,153,0.25)] rounded-2xl p-8 z-10">
+      <div className="relative w-full max-w-md bg-white border border-gray-200 shadow-lg rounded-xl p-8 z-10">
         <div className="flex flex-col items-center mb-6">
-          <FileText className="w-8 h-8 text-pink-500 mb-2" />
-          <h1 className="text-xl font-semibold text-gray-800">Create Page</h1>
+          <FileText className="w-8 h-8 text-gray-600 mb-2" />
+          <h1 className="text-xl font-semibold text-gray-900">Create Page</h1>
           <p className="text-sm text-gray-500 mt-1">
             Fill out the form to create your page.
           </p>
-          <div className={user ? "text-gray-500 mt-1 text-sm": "text-black bg-red-400"}>
+          <div
+            className={
+              user
+                ? "text-gray-500 mt-1 text-sm"
+                : "text-amber-700 bg-amber-50 px-3 py-1 rounded text-sm mt-2"
+            }
+          >
             {user
-              ? `You are Logged In!`
-              : "Not logged in! Page expiration will be set to 7 days."}
+              ? "You are logged in!"
+              : "Not logged in! Page expires in 7 days."}
           </div>
-
         </div>
-        
+
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-5 text-black"
+          className="flex flex-col gap-5 text-gray-900"
         >
-          {/* Theme Select */}
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-              <Palette className="w-4 h-4 text-pink-500" />
+              <Palette className="w-4 h-4 text-gray-500" />
               Theme
             </label>
             <select
               name="theme"
               value={formData.theme}
               onChange={handleChange}
-              className="w-full px-3 py-2 rounded-lg border border-pink-100 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-pink-400/60 focus:border-pink-400 transition-all"
+              className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400/40 focus:border-gray-400 transition-all"
             >
               <option value="raw_html">Raw HTML</option>
             </select>
           </div>
 
-          {/* Private Option */}
           <div className="flex items-center gap-2">
             <input
               id="private"
@@ -144,14 +142,14 @@ export default function CreateForm() {
               name="isPrivate"
               checked={formData.isPrivate}
               onChange={handleChange}
-              className="w-4 h-4 text-pink-500 border-pink-300 focus:ring-pink-400"
+              className="w-4 h-4 text-gray-600 border-gray-300 focus:ring-gray-400 rounded"
             />
             <label
               htmlFor="private"
               className="text-sm font-medium text-gray-700 flex items-center gap-1"
             >
               {formData.isPrivate ? (
-                <Lock className="w-4 h-4 text-pink-500" />
+                <Lock className="w-4 h-4 text-gray-600" />
               ) : (
                 <Unlock className="w-4 h-4 text-gray-400" />
               )}
@@ -159,14 +157,13 @@ export default function CreateForm() {
             </label>
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={status === "loading"}
-            className={`flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium text-gray-100 transition-all duration-200 ${
+            className={`flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium text-white transition-all duration-200 ${
               status === "loading"
-                ? "bg-pink-400 cursor-wait"
-                : "bg-pink-500 hover:bg-pink-600 active:bg-pink-700 shadow-md"
+                ? "bg-gray-400 cursor-wait"
+                : "bg-gray-900 hover:bg-gray-800 active:bg-gray-700 shadow-md"
             }`}
           >
             {status === "loading" ? (
@@ -180,11 +177,10 @@ export default function CreateForm() {
           </button>
         </form>
 
-        {/* Feedback Messages */}
         {status === "success" && (
           <div className="flex items-center gap-2 mt-4 text-green-600 text-sm font-medium animate-fade-in">
             <CheckCircle2 className="w-4 h-4" />
-            Page created successfully! Redirecting you to edit Page!
+            Page created successfully! Redirecting...
           </div>
         )}
         {status === "error" && (

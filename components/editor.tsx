@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { loadFromCache, saveToCache, isCacheNewer } from "@/lib/cache";
 import EditorM from "@monaco-editor/react";
 import { MAX_CHARACTERS as DEFAULT_MAX } from "@/lib/constants";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface EditorProps {
   page_value: string;
@@ -31,21 +32,14 @@ export default function Editor({
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
+  const isDesktop = useMediaQuery(768);
 
   const [activeTab, setActiveTab] = useState<"editor" | "preview">("editor");
   const [loading, setLoading] = useState(true);
   const [charCount, setCharCount] = useState(0);
   const [hasContent, setHasContent] = useState(false);
   const [previewContent, setPreviewContent] = useState("");
-  const [isDesktop, setIsDesktop] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     const cached = loadFromCache(page_id);
@@ -156,9 +150,9 @@ export default function Editor({
 
   if (loading) {
     return (
-      <div className="flex flex-col h-screen bg-gray-100 px-6 lg:px-8 relative">
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 z-50 backdrop-blur-sm">
-          <div className="w-12 h-12 border-[3px] border-pink-300 border-t-pink-500 rounded-full animate-spin mb-4 shadow-inner" />
+      <div className="flex flex-col h-screen bg-gray-50 px-6 lg:px-8 relative">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 z-50 backdrop-blur-sm">
+          <div className="w-12 h-12 border-[3px] border-gray-300 border-t-gray-600 rounded-full animate-spin mb-4" />
           <p className="text-gray-600 text-sm font-medium">Loading editor...</p>
         </div>
       </div>
@@ -166,16 +160,16 @@ export default function Editor({
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100 px-6 lg:px-8 relative pb-[8vh]">
+    <div className="flex flex-col h-screen bg-gray-50 px-6 lg:px-8 relative pb-[8vh]">
       {/* Tabs (mobile only) */}
       {!isDesktop && (
-        <div className="flex border-b border-pink-200/80 bg-gradient-to-b from-pink-50 to-gray-100 sticky top-0 z-20 shadow-sm">
+        <div className="flex border-b border-gray-200 bg-white sticky top-0 z-20 shadow-sm">
           <button
             onClick={() => setActiveTab("editor")}
             className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all duration-200 ${
               activeTab === "editor"
-                ? "text-pink-600 border-b-[3px] border-pink-600 bg-pink-50/60"
-                : "text-gray-600 hover:text-pink-600 hover:bg-pink-50/40"
+                ? "text-gray-900 border-b-2 border-gray-900 bg-gray-50"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
             }`}
           >
             <Code2 className="w-4 h-4" />
@@ -185,8 +179,8 @@ export default function Editor({
             onClick={() => setActiveTab("preview")}
             className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-all duration-200 ${
               activeTab === "preview"
-                ? "text-pink-600 border-b-[3px] border-pink-600 bg-pink-50/60"
-                : "text-gray-600 hover:text-pink-600 hover:bg-pink-50/40"
+                ? "text-gray-900 border-b-2 border-gray-900 bg-gray-50"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
             }`}
           >
             <Eye className="w-4 h-4" />
@@ -196,12 +190,12 @@ export default function Editor({
       )}
 
       {expiration && (
-        <div className="flex items-center justify-between text-black bg-amber-300 my-1 px-3 py-1 rounded text-sm">
+        <div className="flex items-center justify-between text-gray-700 bg-amber-50 border border-amber-200 my-2 px-3 py-1.5 rounded-lg text-sm">
           <span>Page expires on: {expiration}</span>
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="flex items-center gap-1 text-red-700 hover:text-red-900 text-xs font-medium disabled:opacity-50"
+            className="flex items-center gap-1 text-red-600 hover:text-red-800 text-xs font-medium disabled:opacity-50"
           >
             <Trash2 className="w-3 h-3" />
             {deleting ? "Deleting..." : "Delete"}
@@ -210,19 +204,16 @@ export default function Editor({
       )}
 
       {/* Main layout */}
-      <div className="flex-1 flex overflow-hidden mt-4 rounded-2xl border-2 border-pink-200 bg-gradient-to-b from-gray-100 to-pink-50/[0.04] shadow-[0_8px_30px_-6px_rgba(236,72,153,0.25)] relative">
-        {/* Decorative glowing border layer */}
-        <div className="absolute inset-0 rounded-2xl pointer-events-none border border-pink-400/30 [mask-image:linear-gradient(white,transparent_70%)]"></div>
-
+      <div className="flex-1 flex overflow-hidden mt-2 rounded-xl border border-gray-200 bg-white shadow-sm relative">
         {/* Editor */}
         {(isDesktop || activeTab === "editor") && (
           <div
             className={`flex flex-col flex-1 ${
-              isDesktop ? "w-1/2 border-r-2" : ""
-            } border-pink-100/90 bg-gradient-to-b from-gray-100 to-pink-50/[0.07]`}
+              isDesktop ? "w-1/2 border-r border-gray-200" : ""
+            }`}
           >
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-pink-50/50 border-b border-pink-100/80">
-              <Code2 className="w-4 h-4 text-pink-500" />
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border-b border-gray-200">
+              <Code2 className="w-4 h-4 text-gray-500" />
               <span className="text-sm font-medium text-gray-700">index.html</span>
               <div className="ml-auto text-xs text-gray-500">
                 <span
@@ -260,14 +251,14 @@ export default function Editor({
           <div
             className={`flex flex-col flex-1 ${
               isDesktop ? "w-1/2" : ""
-            } bg-gradient-to-b from-pink-50/[0.05] to-gray-100`}
+            }`}
           >
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-pink-50/50 border-b border-pink-100/80">
-              <Eye className="w-4 h-4 text-pink-500" />
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border-b border-gray-200">
+              <Eye className="w-4 h-4 text-gray-500" />
               <span className="text-sm font-medium text-gray-700">Preview</span>
             </div>
 
-            <div className="flex-1 overflow-hidden bg-gray-100 relative rounded-br-2xl">
+            <div className="flex-1 overflow-hidden bg-white relative">
               {hasContent ? (
                 <iframe
                   ref={iframeRef}
