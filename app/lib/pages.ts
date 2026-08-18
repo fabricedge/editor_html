@@ -15,14 +15,7 @@ export async function getPage(nanoid: string) {
 }
 
 export function getPageOwnerId(page: typeof pagesTable.$inferSelect): string | null {
-  if (!page.owner) return null;
-
-  try {
-    const parsed = JSON.parse(page.owner);
-    return parsed?.id ?? null;
-  } catch {
-    return page.owner;
-  }
+  return page.owner || null;
 }
 
 export function parseHtmlDataValue(htmlData: string | null): string {

@@ -31,7 +31,6 @@ export async function POST(request: Request) {
           value: content,
         },
       },
-      expirationDate: expiresAt.toISOString(),
     });
 
     await db.insert(pagesTable).values({

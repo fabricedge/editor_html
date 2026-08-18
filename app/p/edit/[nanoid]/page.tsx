@@ -18,8 +18,16 @@ export default async function Page({
 
   const session = await auth();
   const user = session?.user ?? null;
+
+  if (!user?.id) {
+    notFound();
+  }
+
   const ownerId = getPageOwnerId(page);
-  if (ownerId && user?.id !== ownerId) {
+  if (page.private && (!ownerId || user.id !== ownerId)) {
+    notFound();
+  }
+  if (ownerId && user.id !== ownerId) {
     notFound();
   }
 

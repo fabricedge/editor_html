@@ -28,6 +28,7 @@ export default function Editor({
   const codeRef = useRef<string>("");
   const editorRef = useRef<import("monaco-editor").editor.IStandaloneCodeEditor | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [activeTab, setActiveTab] = useState<"editor" | "preview">("editor");
   const [loading, setLoading] = useState(true);
@@ -65,6 +66,7 @@ export default function Editor({
   useEffect(() => {
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      if (previewTimerRef.current) clearTimeout(previewTimerRef.current);
     };
   }, []);
 
@@ -95,6 +97,13 @@ export default function Editor({
     }, DEBOUNCE_MS);
   };
 
+  const schedulePreview = (content: string) => {
+    if (previewTimerRef.current) clearTimeout(previewTimerRef.current);
+    previewTimerRef.current = setTimeout(() => {
+      setPreviewContent(content);
+    }, DEBOUNCE_MS);
+  };
+
   function handleEditorDidMount(editor: import("monaco-editor").editor.IStandaloneCodeEditor) {
     editorRef.current = editor;
     editor.setValue(codeRef.current);
@@ -118,7 +127,7 @@ export default function Editor({
       codeRef.current = next;
       setCharCount(next.length);
       setHasContent(next.trim().length > 0);
-      setPreviewContent(next);
+      schedulePreview(next);
       scheduleSave(next);
     });
   }
