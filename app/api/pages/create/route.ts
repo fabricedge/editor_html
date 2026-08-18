@@ -4,11 +4,18 @@ import { pagesTable } from "@/lib/schema";
 import { PageCreateSchema } from "@/lib/validators";
 import { ZodError } from "zod";
 import { getSessionUser } from "@/lib/page-access";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const WEEK_MS = 1000 * 60 * 60 * 24 * 7;
 const MONTH_MS = WEEK_MS * 4;
 
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for") ?? "anonymous";
+  const { success } = await checkRateLimit(`create:${ip}`);
+  if (!success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const user = await getSessionUser();
 
   try {
@@ -56,7 +63,7 @@ export async function POST(request: Request) {
       );
     }
 
-    console.error("Error in POST /api/page/create:", error);
+    console.error("Error in POST /api/pages/create:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Code2, Eye } from "lucide-react";
+import { Code2, Eye, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { loadFromCache, saveToCache, isCacheNewer } from "@/lib/cache";
 import EditorM from "@monaco-editor/react";
 import { MAX_CHARACTERS as DEFAULT_MAX } from "@/lib/constants";
@@ -29,6 +30,7 @@ export default function Editor({
   const editorRef = useRef<import("monaco-editor").editor.IStandaloneCodeEditor | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<"editor" | "preview">("editor");
   const [loading, setLoading] = useState(true);
@@ -36,6 +38,7 @@ export default function Editor({
   const [hasContent, setHasContent] = useState(false);
   const [previewContent, setPreviewContent] = useState("");
   const [isDesktop, setIsDesktop] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 768);
@@ -102,6 +105,25 @@ export default function Editor({
     previewTimerRef.current = setTimeout(() => {
       setPreviewContent(content);
     }, DEBOUNCE_MS);
+  };
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this page? This cannot be undone.")) {
+      return;
+    }
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/pages/${page_id}`, { method: "DELETE" });
+      if (res.ok) {
+        router.push("/");
+      } else {
+        console.error("Failed to delete page");
+        setDeleting(false);
+      }
+    } catch {
+      console.error("Error deleting page");
+      setDeleting(false);
+    }
   };
 
   function handleEditorDidMount(editor: import("monaco-editor").editor.IStandaloneCodeEditor) {
@@ -174,8 +196,16 @@ export default function Editor({
       )}
 
       {expiration && (
-        <div className="text-black bg-amber-300 my-1 px-3 py-1 rounded text-sm">
-          Page expires on: {expiration}
+        <div className="flex items-center justify-between text-black bg-amber-300 my-1 px-3 py-1 rounded text-sm">
+          <span>Page expires on: {expiration}</span>
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="flex items-center gap-1 text-red-700 hover:text-red-900 text-xs font-medium disabled:opacity-50"
+          >
+            <Trash2 className="w-3 h-3" />
+            {deleting ? "Deleting..." : "Delete"}
+          </button>
         </div>
       )}
 

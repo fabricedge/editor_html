@@ -5,8 +5,31 @@ import { eq } from "drizzle-orm";
 import { PageEditSchema } from "@/lib/validators";
 import { ZodError } from "zod";
 import { getPageOrNotFound, getSessionUser, canEditPage } from "@/lib/page-access";
+import { checkRateLimit } from "@/lib/rate-limit";
+
+function verifyOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  const host = request.headers.get("host");
+  if (!origin || !host) return true;
+  try {
+    const originUrl = new URL(origin);
+    return originUrl.host === host;
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(request: Request) {
+  if (!verifyOrigin(request)) {
+    return NextResponse.json({ error: "Invalid origin" }, { status: 403 });
+  }
+
+  const ip = request.headers.get("x-forwarded-for") ?? "anonymous";
+  const { success } = await checkRateLimit(`edit:${ip}`);
+  if (!success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const user = await getSessionUser();
 
   try {
