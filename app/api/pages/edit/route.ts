@@ -4,31 +4,26 @@ import { pagesTable } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { PageEditSchema } from "@/lib/validators";
 import { ZodError } from "zod";
-import { getPageOwnerId } from "@/lib/pages";
-import { auth } from "@/lib/auth";
+import { getPageOrNotFound, getSessionUser, canEditPage } from "@/lib/page-access";
 
 export async function POST(request: Request) {
-  const session = await auth();
-  const user = session?.user ?? null;
+  const user = await getSessionUser();
 
   try {
     const body = await request.json();
     const { page_id, content } = PageEditSchema.parse(body);
 
-    const pages = await db.select().from(pagesTable).where(eq(pagesTable.nanoid, page_id));
+    const page = await getPageOrNotFound(page_id).catch(() => null);
 
-    if (!pages.length) {
+    if (!page) {
       return NextResponse.json({ error: "Page not found" }, { status: 404 });
     }
 
-    const page = pages[0];
-
-    const ownerId = getPageOwnerId(page);
-    if (ownerId && (!user?.id || user.id !== ownerId)) {
+    if (!canEditPage(page, user?.id ?? null)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const existingHtmlData = JSON.parse(page.htmlData || '{}');
+    const existingHtmlData = JSON.parse(page.htmlData || "{}");
 
     const newHtmlData = {
       ...existingHtmlData,
@@ -40,10 +35,13 @@ export async function POST(request: Request) {
       },
     };
 
-    await db.update(pagesTable).set({
-      htmlData: JSON.stringify(newHtmlData),
-      updatedAt: new Date(),
-    }).where(eq(pagesTable.nanoid, page_id));
+    await db
+      .update(pagesTable)
+      .set({
+        htmlData: JSON.stringify(newHtmlData),
+        updatedAt: new Date(),
+      })
+      .where(eq(pagesTable.nanoid, page_id));
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import sanitizeHtml from "sanitize-html";
-import { getPage, getPageOwnerId, parseHtmlDataValue } from "@/lib/pages";
-import { auth } from "@/lib/auth";
+import { getPageOrNotFound, getSessionUser, canViewPage } from "@/lib/page-access";
+import { parseHtmlDataValue } from "@/lib/pages";
+import { sanitizePageHtml } from "@/lib/sanitize";
 
 export default async function Page({
   params,
@@ -9,28 +9,18 @@ export default async function Page({
   params: Promise<{ nanoid: string }>;
 }) {
   const { nanoid } = await params;
-  const page = await getPage(nanoid).catch(() => null);
+  const page = await getPageOrNotFound(nanoid).catch(() => null);
 
   if (!page) {
     notFound();
   }
 
-  if (page.private) {
-    const session = await auth();
-    const user = session?.user ?? null;
-    const ownerId = getPageOwnerId(page);
-    if (!ownerId || !user?.id || user.id !== ownerId) {
-      notFound();
-    }
+  const user = await getSessionUser();
+  if (!canViewPage(page, user?.id ?? null)) {
+    notFound();
   }
 
-  const htmlContent = sanitizeHtml(parseHtmlDataValue(page.htmlData), {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat(["style"]),
-    allowedAttributes: {
-      ...sanitizeHtml.defaults.allowedAttributes,
-      "*": ["style", "class", "id"],
-    },
-  });
+  const htmlContent = sanitizePageHtml(parseHtmlDataValue(page.htmlData));
 
   return (
     <div className="pt-5">

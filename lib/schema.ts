@@ -6,7 +6,7 @@ export const pagesTable = pgTable("pages", {
   htmlData: text("html_data"),
   theme: text("theme"),
   owner: text("owner"),
-  private: boolean("private"),
+  private: boolean("private").notNull().default(false),
   insertedAt: timestamp("inserted_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   expiresAt: timestamp("expires_at"),

@@ -3,14 +3,13 @@ import { db } from "@/lib/db";
 import { pagesTable } from "@/lib/schema";
 import { PageCreateSchema } from "@/lib/validators";
 import { ZodError } from "zod";
-import { auth } from "@/lib/auth";
+import { getSessionUser } from "@/lib/page-access";
 
 const WEEK_MS = 1000 * 60 * 60 * 24 * 7;
 const MONTH_MS = WEEK_MS * 4;
 
 export async function POST(request: Request) {
-  const session = await auth();
-  const user = session?.user ?? null;
+  const user = await getSessionUser();
 
   try {
     const body = await request.json();

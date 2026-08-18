@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import Editor from "@/components/editor";
-import { getPage, getPageOwnerId, parseHtmlDataValue } from "@/lib/pages";
+import { getPageOrNotFound, getSessionUser, canEditPage } from "@/lib/page-access";
+import { parseHtmlDataValue } from "@/lib/pages";
 import { MAX_CHARACTERS } from "@/lib/constants";
-import { auth } from "@/lib/auth";
 
 export default async function Page({
   params,
@@ -10,24 +10,18 @@ export default async function Page({
   params: Promise<{ nanoid: string }>;
 }) {
   const { nanoid } = await params;
-  const page = await getPage(nanoid).catch(() => null);
+  const page = await getPageOrNotFound(nanoid).catch(() => null);
 
   if (!page) {
     notFound();
   }
 
-  const session = await auth();
-  const user = session?.user ?? null;
-
+  const user = await getSessionUser();
   if (!user?.id) {
     notFound();
   }
 
-  const ownerId = getPageOwnerId(page);
-  if (page.private && (!ownerId || user.id !== ownerId)) {
-    notFound();
-  }
-  if (ownerId && user.id !== ownerId) {
+  if (!canEditPage(page, user.id)) {
     notFound();
   }
 
