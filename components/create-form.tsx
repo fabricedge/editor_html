@@ -14,7 +14,7 @@ import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react"
 
-export default function FormPage() {
+export default function CreateForm() {
   const [formData, setFormData] = useState({
     theme: "raw_html",
     isPrivate: false,
@@ -59,7 +59,7 @@ export default function FormPage() {
     try {
       const page_id = nanoid();
 
-      const response = await fetch("/api/page/create", {
+      const response = await fetch("/api/pages/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

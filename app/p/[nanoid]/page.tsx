@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import sanitizeHtml from "sanitize-html";
-import { getPage, getPageOwnerId, parseHtmlDataValue } from "../../lib/pages";
-import { auth } from "@/auth";
+import { getPage, getPageOwnerId, parseHtmlDataValue } from "@/lib/pages";
+import { auth } from "@/lib/auth";
 
 export default async function Page({
   params,

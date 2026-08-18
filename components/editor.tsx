@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Code2, Eye } from "lucide-react";
-import { loadFromCache, saveToCache, isCacheNewer } from "../utils/cache/cacheManager";
+import { loadFromCache, saveToCache, isCacheNewer } from "@/lib/cache";
 import EditorM from "@monaco-editor/react";
-import { MAX_CHARACTERS as DEFAULT_MAX } from "../lib/constants";
+import { MAX_CHARACTERS as DEFAULT_MAX } from "@/lib/constants";
 
 interface EditorProps {
   page_value: string;
@@ -72,7 +72,7 @@ export default function Editor({
 
   const saveContent = async (content: string) => {
     try {
-      const res = await fetch("/api/page/edit", {
+      const res = await fetch("/api/pages/edit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ page_id, content }),

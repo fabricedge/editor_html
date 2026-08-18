@@ -1,9 +1,8 @@
-
-import FormPage from "../../components/create"
+import CreateForm from "@/components/create-form";
 
 const CreatePage: React.FC = () => {
     return (
-        <FormPage />
+        <CreateForm />
     );
 };
 

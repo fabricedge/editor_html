@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { db } from '../../../lib/db';
-import { pagesTable } from '../../../lib/schema';
-import { eq } from 'drizzle-orm';
-import { PageEditSchema } from "../../../lib/validators";
+import { db } from "@/lib/db";
+import { pagesTable } from "@/lib/schema";
+import { eq } from "drizzle-orm";
+import { PageEditSchema } from "@/lib/validators";
 import { ZodError } from "zod";
-import { getPageOwnerId } from "../../../lib/pages";
-import { auth } from "@/auth";
+import { getPageOwnerId } from "@/lib/pages";
+import { auth } from "@/lib/auth";
 
 export async function POST(request: Request) {
   const session = await auth();

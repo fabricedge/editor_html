@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { lt } from "drizzle-orm";
-import { db } from "../../../lib/db";
-import { pagesTable } from "../../../lib/schema";
+import { db } from "@/lib/db";
+import { pagesTable } from "@/lib/schema";
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");

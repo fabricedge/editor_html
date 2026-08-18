@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { db } from "../../../lib/db";
-import { pagesTable } from "../../../lib/schema";
-import { PageCreateSchema } from "../../../lib/validators";
+import { db } from "@/lib/db";
+import { pagesTable } from "@/lib/schema";
+import { PageCreateSchema } from "@/lib/validators";
 import { ZodError } from "zod";
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 
 const WEEK_MS = 1000 * 60 * 60 * 24 * 7;
 const MONTH_MS = WEEK_MS * 4;
